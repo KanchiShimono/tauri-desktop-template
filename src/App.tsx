@@ -1,50 +1,81 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
-import "./styles/App.css";
-import "./styles/globals.css"
+import { useState } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+
+import reactLogo from "./assets/react.svg";
 
 function App() {
   const [greetMsg, setGreetMsg] = useState("");
   const [name, setName] = useState("");
 
   async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
+    try {
+      setGreetMsg(await invoke<string>("greet", { name }));
+    } catch {
+      setGreetMsg("Could not get a greeting. Please try again.");
+    }
   }
 
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
+    <main className="flex flex-col items-center gap-4 px-4 pt-[10vh] text-center">
+      <h1 className="text-2xl font-semibold">Welcome to Tauri + React</h1>
 
-      <div className="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
+      <div className="flex justify-center">
+        <a href="https://vite.dev" target="_blank" rel="noreferrer">
+          <img
+            src="/vite.svg"
+            className="h-24 p-6 transition-[filter] duration-750 hover:drop-shadow-[0_0_2em_#747bff]"
+            alt="Vite logo"
+          />
         </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
+        <a href="https://tauri.app" target="_blank" rel="noreferrer">
+          <img
+            src="/tauri.svg"
+            className="h-24 p-6 transition-[filter] duration-750 hover:drop-shadow-[0_0_2em_#24c8db]"
+            alt="Tauri logo"
+          />
         </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
+        <a href="https://react.dev" target="_blank" rel="noreferrer">
+          <img
+            src={reactLogo}
+            className="h-24 p-6 transition-[filter] duration-750 hover:drop-shadow-[0_0_2em_#61dafb]"
+            alt="React logo"
+          />
         </a>
       </div>
       <p>Click on the Tauri, Vite, and React logos to learn more.</p>
 
       <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
+        className="w-full max-w-xs"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void greet();
         }}
       >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
+        <FieldGroup>
+          <Field orientation="horizontal">
+            <FieldLabel className="sr-only" htmlFor="greet-input">
+              Name
+            </FieldLabel>
+            <Input
+              id="greet-input"
+              name="name"
+              value={name}
+              onChange={(event) => {
+                setName(event.currentTarget.value);
+              }}
+              placeholder="Enter a name..."
+            />
+            <Button type="submit">Greet</Button>
+          </Field>
+        </FieldGroup>
       </form>
-      <p>{greetMsg}</p>
+      <output className="max-w-full wrap-anywhere" htmlFor="greet-input">
+        {greetMsg}
+      </output>
     </main>
   );
 }
