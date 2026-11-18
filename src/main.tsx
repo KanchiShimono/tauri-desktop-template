@@ -5,13 +5,6 @@ import App from "./App";
 
 import "./styles/globals.css";
 
-const darkScheme = window.matchMedia("(prefers-color-scheme: dark)");
-function syncTheme() {
-  document.documentElement.classList.toggle("dark", darkScheme.matches);
-}
-syncTheme();
-darkScheme.addEventListener("change", syncTheme);
-
 const root = document.querySelector("#root");
 if (root === null) {
   throw new Error("Missing #root element");
