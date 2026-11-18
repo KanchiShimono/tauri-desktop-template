@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { ThemeProvider } from "next-themes";
 import { useState } from "react";
 
+import { ModeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -22,7 +23,10 @@ function App() {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <main className="flex flex-col items-center gap-4 px-4 pt-[10vh] text-center">
+      <header className="flex min-h-[10vh] items-start justify-end p-4">
+        <ModeToggle />
+      </header>
+      <main className="flex flex-col items-center gap-4 px-4 text-center">
         <h1 className="text-2xl font-semibold">Welcome to Tauri + React</h1>
 
         <div className="flex justify-center">
