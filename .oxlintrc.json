@@ -19,7 +19,15 @@
   "env": {
     "builtin": true
   },
-  "ignorePatterns": [".agents/**", ".claude/**"],
+  "ignorePatterns": [
+    ".agents/**",
+    ".claude/**",
+    "src/components/ui/**",
+    "src/hooks/use-highlighted-code.ts",
+    "src/hooks/use-mobile.ts",
+    "src/lib/highlighter.tsx",
+    "src/lib/utils.ts"
+  ],
   "rules": {
     "eslint/max-lines-per-function": [
       "error",
