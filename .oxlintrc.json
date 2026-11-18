@@ -1,0 +1,72 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "react", "jsx-a11y", "import"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error",
+    "pedantic": "error",
+    "style": "off",
+    "restriction": "off",
+    "nursery": "off"
+  },
+  "options": {
+    "typeAware": true,
+    "typeCheck": true,
+    "maxWarnings": 0,
+    "reportUnusedDisableDirectives": "error"
+  },
+  "env": {
+    "builtin": true
+  },
+  "ignorePatterns": [".agents/**", ".claude/**"],
+  "rules": {
+    "eslint/max-lines-per-function": [
+      "error",
+      { "max": 50, "skipBlankLines": true, "skipComments": true }
+    ],
+    "eslint/no-implied-eval": "off",
+    "eslint/no-throw-literal": "off",
+    "eslint/prefer-promise-reject-errors": "off",
+    "eslint/require-await": "off",
+    "eslint/sort-imports": ["error", { "ignoreDeclarationSort": true }],
+    "react/react-in-jsx-scope": "off",
+    "typescript/no-explicit-any": "error",
+    "typescript/prefer-readonly-parameter-types": "error",
+    "typescript/prefer-string-starts-ends-with": "error",
+    "typescript/promise-function-async": "error",
+    "typescript/use-unknown-in-catch-callback-variable": "error",
+    "unicorn/prefer-string-starts-ends-with": "off"
+  },
+  "overrides": [
+    {
+      "files": ["src/**"],
+      "env": { "browser": true },
+      "rules": {
+        "import/no-nodejs-modules": "error",
+        "import/no-unassigned-import": ["error", { "allow": ["**/*.css"] }]
+      }
+    },
+    {
+      "files": ["**/*.tsx"],
+      "rules": {
+        "eslint/max-lines-per-function": [
+          "error",
+          { "max": 100, "skipBlankLines": true, "skipComments": true }
+        ],
+        "typescript/prefer-readonly-parameter-types": [
+          "error",
+          {
+            "allow": [
+              { "from": "package", "package": "react", "name": ["SubmitEvent", "ChangeEvent"] }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["vite.config.ts"],
+      "env": { "node": true }
+    }
+  ]
+}
