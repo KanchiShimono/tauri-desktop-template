@@ -8,6 +8,9 @@ edition = "2024"
 publish = false
 
 [workspace.dependencies]
+proc-macro2 = "1"
+quote = "1"
+syn = "3"
 
 [workspace.lints.rust]
 warnings = "deny"
