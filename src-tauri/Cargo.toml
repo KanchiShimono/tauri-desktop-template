@@ -1,4 +1,5 @@
 [workspace]
+members = ["crates/macros"]
 
 [workspace.package]
 version = "0.0.1"
