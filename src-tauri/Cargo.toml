@@ -8,6 +8,8 @@ edition = "2024"
 publish = false
 
 [workspace.dependencies]
+macros = { path = "crates/macros" }
+
 proc-macro2 = "1"
 quote = "1"
 syn = "3"
@@ -82,6 +84,7 @@ chrono = { version = "0.4", default-features = false, features = ["std", "clock"
 uuid = { version = "1", features = ["v7", "serde"] }
 tokio = { version = "1", features = ["fs"] }
 sqlx = { version = "0.9", default-features = false, features = ["macros", "derive", "migrate", "chrono", "uuid", "tls-rustls-ring-webpki", "runtime-tokio", "sqlite"] }
+macros.workspace = true
 
 
 # Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration

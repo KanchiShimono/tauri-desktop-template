@@ -2130,6 +2130,7 @@ name = "kanban"
 version = "0.0.1"
 dependencies = [
  "chrono",
+ "macros",
  "serde",
  "serde_json",
  "sqlx",
