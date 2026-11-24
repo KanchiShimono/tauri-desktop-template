@@ -1,4 +1,5 @@
 pub mod app;
+mod cmd;
 mod domain;
 mod sqlite;
 mod text;
