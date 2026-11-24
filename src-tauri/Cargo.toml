@@ -104,3 +104,6 @@ strip = true
 
 [lints]
 workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt"] }
