@@ -1,5 +1,6 @@
 pub mod app;
 mod domain;
+mod sqlite;
 mod text;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
