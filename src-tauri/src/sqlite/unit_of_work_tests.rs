@@ -1,12 +1,18 @@
 use std::time::Duration;
 
+use jiff::Timestamp;
 use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::sqlite::SqlitePoolOptions;
+use uuid::Uuid;
 
 use crate::app::port::PortError;
 use crate::app::port::UnitOfWork;
 use crate::app::port::UnitOfWorkFactory;
+use crate::app::port::assignee::Query;
+use crate::app::port::assignee::Repository;
+use crate::domain::assignee::Assignee;
 use crate::sqlite::store::Store;
+use crate::sqlite::test_db;
 
 #[sqlx::test]
 async fn a_unit_of_work_holds_the_write_lock_from_its_start(
@@ -24,4 +30,21 @@ async fn a_unit_of_work_holds_the_write_lock_from_its_start(
     assert!(matches!(second, Err(PortError::Busy(_))), "{second:?}");
 
     first.rollback().await.expect("rollback");
+}
+
+#[sqlx::test]
+async fn a_rolled_back_unit_of_work_saves_nothing() {
+    let store = test_db::store().await;
+    let assignee = Assignee::new(
+        Uuid::nil().into(),
+        "Ada".parse().expect("valid name"),
+        Timestamp::UNIX_EPOCH,
+    )
+    .into_any();
+
+    let mut uow = store.begin().await.expect("begin");
+    uow.save(&assignee).await.expect("save");
+    uow.rollback().await.expect("rollback");
+
+    assert_eq!(store.find(assignee.id()).await.expect("query"), None);
 }
