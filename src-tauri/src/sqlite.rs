@@ -1,5 +1,6 @@
 mod assignee;
 mod error;
+mod pagination;
 mod store;
 #[cfg(test)]
 pub(crate) mod test_db;
