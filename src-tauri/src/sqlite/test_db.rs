@@ -3,8 +3,10 @@ use sqlx::Connection;
 use sqlx::Error;
 use sqlx::SqliteConnection;
 use sqlx::migrate::Migrator;
+use sqlx::sqlite::SqlitePoolOptions;
 use uuid::Uuid;
 
+use super::store::Store;
 use super::timestamp::SqliteTimestamp;
 
 static MIGRATOR: Migrator = sqlx::migrate!();
@@ -19,6 +21,16 @@ pub(super) async fn migrated() -> SqliteConnection {
     let mut db = open().await;
     MIGRATOR.run(&mut db).await.expect("apply migrations");
     db
+}
+
+pub(crate) async fn store() -> Store {
+    let pool = SqlitePoolOptions::new()
+        .max_connections(1)
+        .connect("sqlite::memory:")
+        .await
+        .expect("open in-memory SQLite pool");
+    MIGRATOR.run(&pool).await.expect("apply migrations");
+    Store::new(pool)
 }
 
 #[sqlx::test]
