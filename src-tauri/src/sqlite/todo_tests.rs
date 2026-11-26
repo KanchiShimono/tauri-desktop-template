@@ -1,14 +1,23 @@
-use jiff::SignedDuration;
 use jiff::Timestamp;
 use uuid::Uuid;
 
 use super::TodoRow;
 use super::TodoRowError;
+use crate::app::pagination::ListQuery;
+use crate::app::port;
+use crate::app::port::PortError;
+use crate::app::port::UnitOfWork;
+use crate::app::port::UnitOfWorkFactory;
+use crate::app::port::todo::Query;
+use crate::app::port::todo::Repository;
+use crate::domain::assignee;
 use crate::domain::assignee::Assignee;
 use crate::domain::todo::Active;
 use crate::domain::todo::NotStarted;
+use crate::domain::todo::Status;
 use crate::domain::todo::StatusState;
 use crate::domain::todo::Todo;
+use crate::sqlite::store::Store;
 use crate::sqlite::test_db;
 use crate::sqlite::timestamp::SqliteTimestamp;
 
@@ -82,44 +91,6 @@ fn each_status_round_trips_through_each_lifecycle() {
 }
 
 #[sqlx::test]
-async fn stored_todo_preserves_all_six_distinct_timestamps() {
-    let mut db = test_db::migrated().await;
-    let started_at = at(2);
-    let nanosecond = SignedDuration::from_nanos(1);
-    let completed_at = started_at - nanosecond;
-    let due_at = started_at + nanosecond;
-    let todo = new_todo()
-        .change_due_at(Some(due_at.into()))
-        .start(at(6).into())
-        .complete(at(7).into())
-        .change_started_at(started_at.into())
-        .change_completed_at(completed_at.into())
-        .archive(at(3))
-        .delete(at(4))
-        .into_any();
-    let row = TodoRow::from(&todo);
-    let stored: TodoRow = sqlx::query_as(
-        "INSERT INTO todos (id, title, created_at, due_at, started_at, completed_at, archived_at, deleted_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING *",
-    )
-    .bind(row.id)
-    .bind(row.title)
-    .bind(row.created_at)
-    .bind(row.due_at)
-    .bind(row.started_at)
-    .bind(row.completed_at)
-    .bind(row.archived_at)
-    .bind(row.deleted_at)
-    .fetch_one(&mut db)
-    .await
-    .expect("read stored todo");
-    assert_eq!(stored.due_at, Some(due_at.into()));
-    assert_eq!(stored.started_at, Some(started_at.into()));
-    assert_eq!(stored.completed_at, Some(completed_at.into()));
-    assert_eq!(Todo::try_from(stored).expect("valid todo row"), todo);
-}
-
-#[sqlx::test]
 async fn stored_timestamps_sort_and_filter_chronologically() {
     let mut db = test_db::migrated().await;
     let start = Timestamp::from_second(13).expect("13 seconds");
@@ -182,4 +153,168 @@ fn completion_requires_a_start_time() {
     row.completed_at = Some(at(2).into());
     let result: Result<Todo, _> = row.try_into();
     assert!(matches!(result, Err(TodoRowError::CompletedWithoutStart)));
+}
+
+#[test]
+fn a_row_outside_the_queried_lifecycle_is_a_backend_failure() {
+    let deleted = new_todo().delete(at(1)).into_any();
+    let result = Todo::<Active, Status>::try_from(TodoRow::from(&deleted));
+    let error = result.expect_err("a deleted row is not active");
+    assert!(matches!(error, TodoRowError::UnexpectedLifecycle));
+    assert!(matches!(PortError::from(error), PortError::Backend(_)));
+}
+
+fn new_assignee(id: u128) -> Assignee<assignee::Active> {
+    Assignee::new(
+        Uuid::from_u128(id).into(),
+        "Ada".parse().expect("valid name"),
+        at(0),
+    )
+}
+
+fn todo_created_at(id: u128, created_at: Timestamp) -> Todo<Active, NotStarted> {
+    Todo::new(
+        Uuid::from_u128(id).into(),
+        "Review invoice".parse().expect("valid title"),
+        None,
+        None,
+        None,
+        created_at,
+    )
+}
+
+async fn save_assignee(store: &Store, assignee: &Assignee<assignee::Active>) {
+    let mut uow = store.begin().await.expect("begin");
+    port::assignee::Repository::save(&mut uow, &assignee.clone().into_any())
+        .await
+        .expect("save assignee");
+    uow.commit().await.expect("commit");
+}
+
+async fn save(store: &Store, todo: &Todo) -> Todo {
+    let mut uow = store.begin().await.expect("begin");
+    let saved = uow.save(todo).await.expect("save");
+    uow.commit().await.expect("commit");
+    saved
+}
+
+#[sqlx::test]
+async fn a_saved_todo_is_found_by_its_id_and_saving_again_replaces_every_column() {
+    let store = test_db::store().await;
+    let ada = new_assignee(100);
+    save_assignee(&store, &ada).await;
+    let saves = [
+        todo_created_at(1, at(6))
+            .rename("Approve invoice".parse().expect("valid title"))
+            .change_description(Some("Check totals".parse().expect("valid description")))
+            .reassign(&ada)
+            .change_due_at(Some(at(5).into()))
+            .start(at(1).into())
+            .complete(at(2).into())
+            .archive(at(3))
+            .delete(at(4))
+            .into_any(),
+        todo_created_at(1, at(0)).into_any(),
+    ];
+
+    for todo in saves {
+        assert_eq!(save(&store, &todo).await, todo);
+        assert_eq!(store.find(todo.id()).await.expect("query"), Some(todo));
+    }
+    let other = Uuid::from_u128(2).into();
+    assert_eq!(store.find(other).await.expect("query"), None);
+}
+
+#[sqlx::test]
+async fn only_an_undeleted_todo_is_loaded() {
+    let store = test_db::store().await;
+    let active = todo_created_at(1, at(0)).into_any();
+    let archived = todo_created_at(2, at(0)).archive(at(1)).into_any();
+    let deleted = todo_created_at(3, at(0)).delete(at(1)).into_any();
+    for todo in [&active, &archived, &deleted] {
+        save(&store, todo).await;
+    }
+
+    let mut uow = store.begin().await.expect("begin");
+    for todo in [active, archived] {
+        let loaded = uow.load_undeleted(todo.id()).await.expect("load");
+        assert_eq!(loaded.map(Todo::into_any), Some(todo));
+    }
+    assert_eq!(uow.load_undeleted(deleted.id()).await.expect("load"), None);
+}
+
+#[sqlx::test]
+async fn active_todos_are_listed_in_creation_order() {
+    let store = test_db::store().await;
+    let ordered =
+        [(2, at(1)), (1, at(2))].map(|(id, created_at)| todo_created_at(id, created_at).into_any());
+    for todo in ordered.iter().rev() {
+        save(&store, todo).await;
+    }
+    save(&store, &todo_created_at(3, at(0)).archive(at(1)).into_any()).await;
+    save(&store, &todo_created_at(4, at(0)).delete(at(1)).into_any()).await;
+
+    let listed = store.list_active().await.expect("query");
+    let listed = listed.into_iter().map(Todo::into_any).collect::<Vec<_>>();
+    assert_eq!(listed, ordered);
+}
+
+#[sqlx::test]
+async fn archived_todos_are_paged_from_the_latest_archive_with_the_id_as_tie_breaker() {
+    let store = test_db::store().await;
+    let ordered = [(1, at(9)), (3, at(8)), (2, at(8))]
+        .map(|(id, archived_at)| todo_created_at(id, at(0)).archive(archived_at).into_any());
+    for todo in &ordered {
+        save(&store, todo).await;
+    }
+    save(&store, &todo_created_at(4, at(0)).into_any()).await;
+    let deleted = todo_created_at(5, at(0)).archive(at(10)).delete(at(11));
+    save(&store, &deleted.into_any()).await;
+
+    for (limit, offset, range, next_offset) in [(2, 0, 0..2, Some(2)), (2, 2, 2..3, None)] {
+        let query = ListQuery::try_new(limit, offset).expect("valid query");
+        let page = store.list_archived(query).await.expect("query");
+        let items = page
+            .items()
+            .iter()
+            .cloned()
+            .map(Todo::into_any)
+            .collect::<Vec<_>>();
+        assert_eq!(
+            (items.as_slice(), page.next_offset()),
+            (&ordered[range], next_offset),
+            "limit {limit}, offset {offset}"
+        );
+    }
+}
+
+#[sqlx::test]
+async fn the_todos_of_an_assignee_are_loaded_in_any_lifecycle_and_checked_for_an_undeleted_one() {
+    let store = test_db::store().await;
+    let [ada, grace] = [100, 101].map(new_assignee);
+    for assignee in [&ada, &grace] {
+        save_assignee(&store, assignee).await;
+    }
+    let of_ada = [
+        todo_created_at(1, at(1))
+            .reassign(&ada)
+            .archive(at(3))
+            .into_any(),
+        todo_created_at(2, at(2))
+            .reassign(&ada)
+            .delete(at(3))
+            .into_any(),
+    ];
+    let of_grace = todo_created_at(3, at(0))
+        .reassign(&grace)
+        .delete(at(3))
+        .into_any();
+    for todo in of_ada.iter().chain([&of_grace]) {
+        save(&store, todo).await;
+    }
+
+    let mut uow = store.begin().await.expect("begin");
+    assert_eq!(uow.load_all_for(ada.id()).await.expect("load"), of_ada);
+    assert!(uow.has_undeleted_for(ada.id()).await.expect("query"));
+    assert!(!uow.has_undeleted_for(grace.id()).await.expect("query"));
 }
