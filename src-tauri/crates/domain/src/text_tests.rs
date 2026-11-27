@@ -1,5 +1,5 @@
-use super::NonEmptyText;
-use super::NonEmptyTextError;
+use crate::text::NonEmptyText;
+use crate::text::NonEmptyTextError;
 
 #[test]
 fn non_empty_text_preserves_whitespace() {

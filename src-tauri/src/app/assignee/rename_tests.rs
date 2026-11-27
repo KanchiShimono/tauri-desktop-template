@@ -1,3 +1,4 @@
+use domain::assignee::Assignee;
 use jiff::Timestamp;
 use uuid::Uuid;
 
@@ -11,7 +12,6 @@ use crate::app::port::PortError;
 use crate::app::port::assignee::Query;
 use crate::app::port::assignee::Repository;
 use crate::app::testing;
-use crate::domain::assignee::Assignee;
 
 #[test]
 fn an_invalid_name_is_reported_as_a_violation_of_the_name() {

@@ -2,13 +2,13 @@ use jiff::SignedDuration;
 use jiff::Timestamp;
 use uuid::Uuid;
 
-use super::Active;
-use super::Assignee;
-use super::AssigneeByLifecycle;
-use super::AssigneeId;
-use super::AssigneeName;
-use super::AssigneeNameError;
-use super::Deleted;
+use crate::assignee::Active;
+use crate::assignee::Assignee;
+use crate::assignee::AssigneeByLifecycle;
+use crate::assignee::AssigneeId;
+use crate::assignee::AssigneeName;
+use crate::assignee::AssigneeNameError;
+use crate::assignee::Deleted;
 
 #[test]
 fn name_trims_only_surrounding_whitespace() {

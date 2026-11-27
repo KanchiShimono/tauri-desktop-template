@@ -1,3 +1,5 @@
+use domain::assignee::Assignee;
+use domain::assignee::AssigneeId;
 use jiff::Timestamp;
 use thiserror::Error;
 use uuid::Uuid;
@@ -13,8 +15,6 @@ use crate::app::port::PortError;
 use crate::app::port::UnitOfWorkFactory;
 use crate::app::port::assignee;
 use crate::app::port::todo;
-use crate::domain::assignee::Assignee;
-use crate::domain::assignee::AssigneeId;
 
 #[derive(Clone, Debug)]
 pub(crate) struct UnvalidatedDeleteAssigneeInput {

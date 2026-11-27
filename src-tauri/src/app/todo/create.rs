@@ -1,3 +1,9 @@
+use domain::assignee::AssigneeId;
+use domain::todo::DueAt;
+use domain::todo::Todo;
+use domain::todo::TodoDescription;
+use domain::todo::TodoId;
+use domain::todo::TodoTitle;
 use jiff::Timestamp;
 use thiserror::Error;
 use uuid::Uuid;
@@ -15,12 +21,6 @@ use crate::app::port::PortError;
 use crate::app::port::UnitOfWorkFactory;
 use crate::app::port::assignee;
 use crate::app::port::todo;
-use crate::domain::assignee::AssigneeId;
-use crate::domain::todo::DueAt;
-use crate::domain::todo::Todo;
-use crate::domain::todo::TodoDescription;
-use crate::domain::todo::TodoId;
-use crate::domain::todo::TodoTitle;
 
 #[derive(Clone, Debug)]
 pub(crate) struct UnvalidatedCreateTodoInput {

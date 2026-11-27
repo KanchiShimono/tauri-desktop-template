@@ -1,3 +1,6 @@
+use domain::todo::Todo;
+use domain::todo::TodoByUndeleted;
+use domain::todo::TodoId;
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -9,9 +12,6 @@ use crate::app::error::ErrorInfo;
 use crate::app::port::PortError;
 use crate::app::port::UnitOfWorkFactory;
 use crate::app::port::todo::Repository;
-use crate::domain::todo::Todo;
-use crate::domain::todo::TodoByUndeleted;
-use crate::domain::todo::TodoId;
 
 #[derive(Clone, Debug)]
 pub(crate) struct UnvalidatedUnarchiveTodoInput {

@@ -1,3 +1,4 @@
+use domain::todo::Todo;
 use jiff::Timestamp;
 use uuid::Uuid;
 
@@ -5,7 +6,6 @@ use super::testing;
 use crate::app::port::PortError;
 use crate::app::port::todo::Query;
 use crate::app::port::todo::Repository;
-use crate::domain::todo::Todo;
 
 fn todo(id: u128) -> Todo {
     Todo::new(

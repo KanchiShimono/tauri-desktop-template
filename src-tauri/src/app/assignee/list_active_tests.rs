@@ -1,3 +1,4 @@
+use domain::assignee::Assignee;
 use jiff::Timestamp;
 use uuid::Uuid;
 
@@ -5,7 +6,6 @@ use crate::app::assignee::view::AssigneeView;
 use crate::app::pagination::UnvalidatedListQuery;
 use crate::app::port::assignee::Repository;
 use crate::app::testing;
-use crate::domain::assignee::Assignee;
 
 #[tokio::test]
 async fn the_requested_page_of_the_active_assignees_is_listed() {

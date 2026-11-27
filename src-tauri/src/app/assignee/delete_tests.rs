@@ -1,3 +1,8 @@
+use domain::assignee;
+use domain::assignee::Assignee;
+use domain::todo;
+use domain::todo::NotStarted;
+use domain::todo::Todo;
 use jiff::Timestamp;
 use uuid::Uuid;
 
@@ -11,11 +16,6 @@ use crate::app::error::ErrorInfo;
 use crate::app::port;
 use crate::app::port::PortError;
 use crate::app::testing;
-use crate::domain::assignee;
-use crate::domain::assignee::Assignee;
-use crate::domain::todo::Active;
-use crate::domain::todo::NotStarted;
-use crate::domain::todo::Todo;
 
 fn new_assignee(id: u128) -> Assignee<assignee::Active> {
     Assignee::new(
@@ -25,7 +25,7 @@ fn new_assignee(id: u128) -> Assignee<assignee::Active> {
     )
 }
 
-fn new_todo(id: u128) -> Todo<Active, NotStarted> {
+fn new_todo(id: u128) -> Todo<todo::Active, NotStarted> {
     Todo::new(
         Uuid::from_u128(id).into(),
         "Review design".parse().expect("valid title"),

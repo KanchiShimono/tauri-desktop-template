@@ -1,3 +1,4 @@
+use domain::todo::TodoId;
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -8,7 +9,6 @@ use crate::app::error::AppError;
 use crate::app::error::ErrorInfo;
 use crate::app::port::PortError;
 use crate::app::port::todo::Query;
-use crate::domain::todo::TodoId;
 
 #[derive(Debug, Error)]
 pub(crate) enum GetTodoError {

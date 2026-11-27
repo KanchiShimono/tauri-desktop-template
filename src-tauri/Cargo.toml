@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/macros"]
+members = ["crates/domain","crates/macros"]
 
 [workspace.package]
 version = "0.0.1"
@@ -8,6 +8,7 @@ edition = "2024"
 publish = false
 
 [workspace.dependencies]
+domain = { path = "crates/domain" }
 macros = { path = "crates/macros" }
 
 jiff = "1"
@@ -84,9 +85,9 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-macros.workspace = true
-
+domain.workspace = true
 jiff = { workspace = true, features = ["serde"] }
+macros.workspace = true
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 specta = { version = "=2.0.0-rc.28", features = ["derive", "function", "uuid"] }

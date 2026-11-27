@@ -1,3 +1,7 @@
+use domain::assignee::Assignee;
+use domain::assignee::AssigneeId;
+use domain::assignee::AssigneeName;
+use domain::assignee::AssigneeNameError;
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -9,10 +13,6 @@ use crate::app::error::ErrorInfo;
 use crate::app::port::PortError;
 use crate::app::port::UnitOfWorkFactory;
 use crate::app::port::assignee::Repository;
-use crate::domain::assignee::Assignee;
-use crate::domain::assignee::AssigneeId;
-use crate::domain::assignee::AssigneeName;
-use crate::domain::assignee::AssigneeNameError;
 
 #[derive(Clone, Debug)]
 pub(crate) struct UnvalidatedRenameAssigneeInput {

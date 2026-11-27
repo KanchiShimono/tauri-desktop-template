@@ -2,28 +2,28 @@ use jiff::SignedDuration;
 use jiff::Timestamp;
 use uuid::Uuid;
 
-use super::Active;
-use super::CompletedAt;
-use super::Done;
-use super::DueAt;
-use super::InProgress;
-use super::NotStarted;
-use super::StartedAt;
-use super::Status;
-use super::StatusKind;
-use super::Todo;
-use super::TodoByLifecycle;
-use super::TodoByStatus;
-use super::TodoByUndeleted;
-use super::TodoDescription;
-use super::TodoDescriptionError;
-use super::TodoId;
-use super::TodoTitle;
-use super::TodoTitleError;
-use super::Undeleted;
-use crate::domain::assignee;
-use crate::domain::assignee::Assignee;
-use crate::domain::assignee::AssigneeId;
+use crate::assignee;
+use crate::assignee::Assignee;
+use crate::assignee::AssigneeId;
+use crate::todo;
+use crate::todo::CompletedAt;
+use crate::todo::Done;
+use crate::todo::DueAt;
+use crate::todo::InProgress;
+use crate::todo::NotStarted;
+use crate::todo::StartedAt;
+use crate::todo::Status;
+use crate::todo::StatusKind;
+use crate::todo::Todo;
+use crate::todo::TodoByLifecycle;
+use crate::todo::TodoByStatus;
+use crate::todo::TodoByUndeleted;
+use crate::todo::TodoDescription;
+use crate::todo::TodoDescriptionError;
+use crate::todo::TodoId;
+use crate::todo::TodoTitle;
+use crate::todo::TodoTitleError;
+use crate::todo::Undeleted;
 
 #[test]
 fn title_trims_only_surrounding_whitespace() {
@@ -116,7 +116,7 @@ fn at(hours: i64) -> Timestamp {
     Timestamp::UNIX_EPOCH + SignedDuration::from_hours(hours)
 }
 
-fn new_todo() -> Todo<Active, NotStarted> {
+fn new_todo() -> Todo<todo::Active, NotStarted> {
     Todo::new(
         TodoId::from(Uuid::from_u128(1)),
         "Review invoice".parse().expect("title should be valid"),

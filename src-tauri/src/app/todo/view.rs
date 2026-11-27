@@ -1,14 +1,14 @@
+use domain::todo::Active;
+use domain::todo::Lifecycle;
+use domain::todo::LifecycleState;
+use domain::todo::Status;
+use domain::todo::StatusState;
+use domain::todo::Todo;
+use domain::todo::Undeleted;
 use jiff::Timestamp;
 use uuid::Uuid;
 
 use crate::app::pagination::Page;
-use crate::domain::todo::Active;
-use crate::domain::todo::Lifecycle;
-use crate::domain::todo::LifecycleState;
-use crate::domain::todo::Status;
-use crate::domain::todo::StatusState;
-use crate::domain::todo::Todo;
-use crate::domain::todo::Undeleted;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct TodoView {

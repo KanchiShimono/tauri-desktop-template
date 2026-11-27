@@ -1,10 +1,11 @@
+use domain::assignee::Active;
+use domain::assignee::Assignee;
+use domain::assignee::AssigneeId;
+
 use super::PortError;
 use super::UnitOfWork;
 use crate::app::pagination::ListQuery;
 use crate::app::pagination::Page;
-use crate::domain::assignee::Active;
-use crate::domain::assignee::Assignee;
-use crate::domain::assignee::AssigneeId;
 
 pub(crate) trait Query: Send + Sync {
     fn find(

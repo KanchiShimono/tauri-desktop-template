@@ -1,10 +1,10 @@
+use domain::assignee::Assignee;
+use domain::assignee::Lifecycle;
+use domain::assignee::LifecycleState;
 use jiff::Timestamp;
 use uuid::Uuid;
 
 use crate::app::pagination::Page;
-use crate::domain::assignee::Assignee;
-use crate::domain::assignee::Lifecycle;
-use crate::domain::assignee::LifecycleState;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct AssigneeView {

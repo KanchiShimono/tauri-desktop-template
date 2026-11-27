@@ -5,6 +5,8 @@ mod list_active;
 pub(crate) mod rename;
 pub(crate) mod view;
 
+use domain::assignee::AssigneeId;
+use domain::assignee::AssigneeNameError;
 use thiserror::Error;
 
 use super::error::AppError;
@@ -12,8 +14,6 @@ use super::error::ErrorInfo;
 use super::error::FieldViolation;
 use super::error::PublicReason;
 use super::error::Violations;
-use crate::domain::assignee::AssigneeId;
-use crate::domain::assignee::AssigneeNameError;
 
 #[derive(Debug, Eq, Error, PartialEq)]
 #[error("No active assignee matches {0}.")]

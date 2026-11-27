@@ -1,3 +1,10 @@
+use domain::assignee;
+use domain::assignee::Assignee;
+use domain::todo;
+use domain::todo::NotStarted;
+use domain::todo::Status;
+use domain::todo::StatusState;
+use domain::todo::Todo;
 use jiff::Timestamp;
 use uuid::Uuid;
 
@@ -10,13 +17,6 @@ use crate::app::port::UnitOfWork;
 use crate::app::port::UnitOfWorkFactory;
 use crate::app::port::todo::Query;
 use crate::app::port::todo::Repository;
-use crate::domain::assignee;
-use crate::domain::assignee::Assignee;
-use crate::domain::todo::Active;
-use crate::domain::todo::NotStarted;
-use crate::domain::todo::Status;
-use crate::domain::todo::StatusState;
-use crate::domain::todo::Todo;
 use crate::sqlite::store::Store;
 use crate::sqlite::test_db;
 use crate::sqlite::timestamp::SqliteTimestamp;
@@ -25,7 +25,7 @@ fn at(second: i64) -> Timestamp {
     Timestamp::new(second, 123_456_789).expect("valid timestamp")
 }
 
-fn new_todo() -> Todo<Active, NotStarted> {
+fn new_todo() -> Todo<todo::Active, NotStarted> {
     Todo::new(
         Uuid::max().into(),
         "Review invoice".parse().expect("valid title"),
@@ -37,7 +37,7 @@ fn new_todo() -> Todo<Active, NotStarted> {
 }
 
 fn assert_lifecycle_round_trips<S: StatusState>(
-    active: Todo<Active, S>,
+    active: Todo<todo::Active, S>,
     started_at: Option<Timestamp>,
     completed_at: Option<Timestamp>,
 ) {
@@ -158,7 +158,7 @@ fn completion_requires_a_start_time() {
 #[test]
 fn a_row_outside_the_queried_lifecycle_is_a_backend_failure() {
     let deleted = new_todo().delete(at(1)).into_any();
-    let result = Todo::<Active, Status>::try_from(TodoRow::from(&deleted));
+    let result = Todo::<todo::Active, Status>::try_from(TodoRow::from(&deleted));
     let error = result.expect_err("a deleted row is not active");
     assert!(matches!(error, TodoRowError::UnexpectedLifecycle));
     assert!(matches!(PortError::from(error), PortError::Backend(_)));
@@ -172,7 +172,7 @@ fn new_assignee(id: u128) -> Assignee<assignee::Active> {
     )
 }
 
-fn todo_created_at(id: u128, created_at: Timestamp) -> Todo<Active, NotStarted> {
+fn todo_created_at(id: u128, created_at: Timestamp) -> Todo<todo::Active, NotStarted> {
     Todo::new(
         Uuid::from_u128(id).into(),
         "Review invoice".parse().expect("valid title"),
