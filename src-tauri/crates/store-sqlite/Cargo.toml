@@ -6,6 +6,20 @@ edition.workspace = true
 publish.workspace = true
 
 [dependencies]
+app.workspace = true
+domain.workspace = true
+jiff.workspace = true
+macros.workspace = true
+sqlx = { workspace = true, default-features = false, features = [
+  "macros",
+  "migrate",
+  "runtime-tokio",
+  "sqlite",
+  "uuid",
+] }
+thiserror.workspace = true
+tokio = { workspace = true, features = ["fs"] }
+uuid.workspace = true
 
 [lints]
 workspace = true
