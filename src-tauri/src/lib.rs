@@ -6,13 +6,15 @@
     )
 )]
 
-pub mod app;
 mod cmd;
 mod sqlite;
 
 use std::error::Error;
 use std::io;
 
+use ::app::app;
+use ::app::clock::SystemClock;
+use ::app::id::UuidV7Generator;
 use tauri::Builder;
 use tauri::Manager;
 use tauri::Wry;
@@ -20,8 +22,6 @@ use tauri::async_runtime;
 use tracing::Level;
 use tracing_subscriber::fmt::writer::MakeWriterExt;
 
-use crate::app::SystemClock;
-use crate::app::UuidV7Generator;
 use crate::sqlite::Store;
 
 pub(crate) type App = app::App<Store, SystemClock, UuidV7Generator>;

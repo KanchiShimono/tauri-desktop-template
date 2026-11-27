@@ -1,3 +1,8 @@
+use app::pagination::ListQuery;
+use app::pagination::Page;
+use app::port::PortError;
+use app::port::todo::Query;
+use app::port::todo::Repository;
 use domain::assignee::AssigneeId;
 use domain::todo::Active;
 use domain::todo::Archived;
@@ -21,11 +26,7 @@ use super::pagination::LimitOffset;
 use super::store::Store;
 use super::timestamp::SqliteTimestamp;
 use super::unit_of_work::UnitOfWork;
-use crate::app::pagination::ListQuery;
-use crate::app::pagination::Page;
-use crate::app::port::PortError;
-use crate::app::port::todo::Query;
-use crate::app::port::todo::Repository;
+use crate::sqlite::error;
 
 #[derive(FromRow)]
 struct TodoRow {
@@ -181,7 +182,8 @@ impl Query for Store {
         let row = sqlx::query_as::<_, TodoRow>("SELECT * FROM todos WHERE id = ?")
             .bind(Uuid::from(id).hyphenated())
             .fetch_optional(self.pool())
-            .await?;
+            .await
+            .map_err(error::into_port_error)?;
         Ok(row.map(Todo::try_from).transpose()?)
     }
 
@@ -192,7 +194,8 @@ impl Query for Store {
              ORDER BY created_at, id",
         )
         .fetch_all(self.pool())
-        .await?;
+        .await
+        .map_err(error::into_port_error)?;
         Ok(rows
             .into_iter()
             .map(Todo::try_from)
@@ -213,7 +216,8 @@ impl Query for Store {
         .bind(limit)
         .bind(offset)
         .fetch_all(self.pool())
-        .await?;
+        .await
+        .map_err(error::into_port_error)?;
         let todos = rows
             .into_iter()
             .map(Todo::try_from)
@@ -231,7 +235,8 @@ impl Repository for UnitOfWork {
             sqlx::query_as::<_, TodoRow>("SELECT * FROM todos WHERE id = ? AND deleted_at IS NULL")
                 .bind(Uuid::from(id).hyphenated())
                 .fetch_optional(self.connection())
-                .await?;
+                .await
+                .map_err(error::into_port_error)?;
         Ok(row.map(Todo::try_from).transpose()?)
     }
 
@@ -241,7 +246,8 @@ impl Repository for UnitOfWork {
         )
         .bind(Uuid::from(assignee_id).hyphenated())
         .fetch_all(self.connection())
-        .await?;
+        .await
+        .map_err(error::into_port_error)?;
         Ok(rows
             .into_iter()
             .map(Todo::try_from)
@@ -279,17 +285,19 @@ impl Repository for UnitOfWork {
         .bind(row.archived_at)
         .bind(row.deleted_at)
         .fetch_one(self.connection())
-        .await?;
+        .await
+        .map_err(error::into_port_error)?;
         Ok(stored.try_into()?)
     }
 
     async fn has_undeleted_for(&mut self, assignee_id: AssigneeId) -> Result<bool, PortError> {
-        Ok(sqlx::query_scalar(
+        sqlx::query_scalar(
             "SELECT EXISTS (SELECT 1 FROM todos WHERE assignee_id = ? AND deleted_at IS NULL)",
         )
         .bind(Uuid::from(assignee_id).hyphenated())
         .fetch_one(self.connection())
-        .await?)
+        .await
+        .map_err(error::into_port_error)
     }
 }
 

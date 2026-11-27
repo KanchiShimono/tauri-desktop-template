@@ -1,3 +1,12 @@
+use app::assignee::create::UnvalidatedCreateAssigneeInput;
+use app::assignee::delete::AssignedTodoPolicy;
+use app::assignee::delete::UnvalidatedDeleteAssigneeInput;
+use app::assignee::view::AssigneeView;
+use app::clock::SystemClock;
+use app::id::UuidV7Generator;
+use app::pagination::ListQuery;
+use app::pagination::Page;
+use app::pagination::UnvalidatedListQuery;
 use serde_json::json;
 use uuid::Uuid;
 
@@ -5,15 +14,6 @@ use super::DeleteAssigneeRequest;
 use super::ListActiveAssigneesRequest;
 use super::ListActiveAssigneesResponse;
 use crate::App;
-use crate::app::AssigneeView;
-use crate::app::ListQuery;
-use crate::app::Page;
-use crate::app::SystemClock;
-use crate::app::UuidV7Generator;
-use crate::app::assignee::create::UnvalidatedCreateAssigneeInput;
-use crate::app::assignee::delete::AssignedTodoPolicy;
-use crate::app::assignee::delete::UnvalidatedDeleteAssigneeInput;
-use crate::app::pagination::UnvalidatedListQuery;
 use crate::sqlite::test_db;
 
 async fn views(count: usize) -> Vec<AssigneeView> {

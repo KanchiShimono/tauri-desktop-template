@@ -5,12 +5,12 @@ mod pagination;
 mod timestamp;
 mod todo;
 
+use app::pagination::ListQuery;
 use tauri::Runtime;
 use tauri_specta::Builder;
 use tauri_specta::ErrorHandlingMode;
 
 use self::error::CommandError;
-use crate::app::ListQuery;
 
 pub(crate) fn builder<R: Runtime>() -> Builder<R> {
     Builder::new()

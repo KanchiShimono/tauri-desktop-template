@@ -3,6 +3,12 @@ use std::io::Write;
 use std::sync::Arc;
 use std::sync::Mutex;
 
+use app::error::ErrorInfo;
+use app::error::FieldViolation;
+use app::error::PublicReason;
+use app::error::Violations;
+use app::port::PortError;
+use app::todo::TodoNotFound;
 use serde_json::Value;
 use serde_json::json;
 use tracing::subscriber;
@@ -10,12 +16,6 @@ use tracing_subscriber::fmt::MakeWriter;
 use uuid::Uuid;
 
 use super::CommandError;
-use crate::app::error::ErrorInfo;
-use crate::app::error::FieldViolation;
-use crate::app::error::PublicReason;
-use crate::app::error::Violations;
-use crate::app::port::PortError;
-use crate::app::todo::TodoNotFound;
 
 fn wire(info: &ErrorInfo) -> Value {
     serde_json::to_value(CommandError::from(info)).expect("serializable")

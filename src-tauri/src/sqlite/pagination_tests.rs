@@ -1,5 +1,6 @@
+use app::pagination::ListQuery;
+
 use super::LimitOffset;
-use crate::app::pagination::ListQuery;
 
 #[test]
 fn the_limit_gains_a_lookahead_row_and_an_unrepresentable_offset_saturates() {

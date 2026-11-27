@@ -1,3 +1,8 @@
+use app::pagination::ListQuery;
+use app::pagination::Page;
+use app::port::PortError;
+use app::port::assignee::Query;
+use app::port::assignee::Repository;
 use domain::assignee::Active;
 use domain::assignee::Assignee;
 use domain::assignee::AssigneeByLifecycle;
@@ -13,11 +18,7 @@ use super::pagination::LimitOffset;
 use super::store::Store;
 use super::timestamp::SqliteTimestamp;
 use super::unit_of_work::UnitOfWork;
-use crate::app::pagination::ListQuery;
-use crate::app::pagination::Page;
-use crate::app::port::PortError;
-use crate::app::port::assignee::Query;
-use crate::app::port::assignee::Repository;
+use crate::sqlite::error;
 
 #[derive(FromRow)]
 struct AssigneeRow {
@@ -88,7 +89,8 @@ impl Query for Store {
         let row = sqlx::query_as::<_, AssigneeRow>("SELECT * FROM assignees WHERE id = ?")
             .bind(Uuid::from(id).hyphenated())
             .fetch_optional(self.pool())
-            .await?;
+            .await
+            .map_err(error::into_port_error)?;
         Ok(row.map(Assignee::try_from).transpose()?)
     }
 
@@ -103,7 +105,8 @@ impl Query for Store {
         .bind(limit)
         .bind(offset)
         .fetch_all(self.pool())
-        .await?;
+        .await
+        .map_err(error::into_port_error)?;
         let assignees = rows
             .into_iter()
             .map(Assignee::try_from)
@@ -119,7 +122,8 @@ impl Repository for UnitOfWork {
         )
         .bind(Uuid::from(id).hyphenated())
         .fetch_optional(self.connection())
-        .await?;
+        .await
+        .map_err(error::into_port_error)?;
         Ok(row.map(Assignee::try_from).transpose()?)
     }
 
@@ -139,7 +143,8 @@ impl Repository for UnitOfWork {
         .bind(row.created_at)
         .bind(row.deleted_at)
         .fetch_one(self.connection())
-        .await?;
+        .await
+        .map_err(error::into_port_error)?;
         Ok(stored.try_into()?)
     }
 }

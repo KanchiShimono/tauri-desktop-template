@@ -1,3 +1,9 @@
+use app::pagination::ListQuery;
+use app::port::PortError;
+use app::port::UnitOfWork;
+use app::port::UnitOfWorkFactory;
+use app::port::assignee::Query;
+use app::port::assignee::Repository;
 use domain::assignee::Active;
 use domain::assignee::Assignee;
 use jiff::Timestamp;
@@ -5,12 +11,6 @@ use uuid::Uuid;
 
 use super::AssigneeRow;
 use super::AssigneeRowError;
-use crate::app::pagination::ListQuery;
-use crate::app::port::PortError;
-use crate::app::port::UnitOfWork;
-use crate::app::port::UnitOfWorkFactory;
-use crate::app::port::assignee::Query;
-use crate::app::port::assignee::Repository;
 use crate::sqlite::store::Store;
 use crate::sqlite::test_db;
 

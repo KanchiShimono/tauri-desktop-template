@@ -1,3 +1,10 @@
+use app::pagination::ListQuery;
+use app::port;
+use app::port::PortError;
+use app::port::UnitOfWork;
+use app::port::UnitOfWorkFactory;
+use app::port::todo::Query;
+use app::port::todo::Repository;
 use domain::assignee;
 use domain::assignee::Assignee;
 use domain::todo;
@@ -10,13 +17,6 @@ use uuid::Uuid;
 
 use super::TodoRow;
 use super::TodoRowError;
-use crate::app::pagination::ListQuery;
-use crate::app::port;
-use crate::app::port::PortError;
-use crate::app::port::UnitOfWork;
-use crate::app::port::UnitOfWorkFactory;
-use crate::app::port::todo::Query;
-use crate::app::port::todo::Repository;
 use crate::sqlite::store::Store;
 use crate::sqlite::test_db;
 use crate::sqlite::timestamp::SqliteTimestamp;

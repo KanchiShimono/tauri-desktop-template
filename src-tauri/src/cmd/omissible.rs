@@ -1,10 +1,9 @@
+use app::presence::Presence;
 use serde::Deserialize;
 use serde::Deserializer;
 use specta::Type;
 use specta::Types;
 use specta::datatype::DataType;
-
-use crate::app::presence::Presence;
 
 #[derive(Debug)]
 pub(crate) struct Omissible<T>(Presence<T>);
