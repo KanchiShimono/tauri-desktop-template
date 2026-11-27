@@ -35,3 +35,7 @@ pub(crate) fn builder<R: Runtime>() -> Builder<R> {
         .error_handling(ErrorHandlingMode::Throw)
         .disable_serde_phases()
 }
+
+#[cfg(test)]
+#[path = "cmd_tests.rs"]
+mod tests;
