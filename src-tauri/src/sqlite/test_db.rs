@@ -2,14 +2,12 @@ use jiff::Timestamp;
 use sqlx::Connection;
 use sqlx::Error;
 use sqlx::SqliteConnection;
-use sqlx::migrate::Migrator;
 use sqlx::sqlite::SqlitePoolOptions;
 use uuid::Uuid;
 
+use super::store::MIGRATOR;
 use super::store::Store;
 use super::timestamp::SqliteTimestamp;
-
-static MIGRATOR: Migrator = sqlx::migrate!();
 
 pub(super) async fn open() -> SqliteConnection {
     SqliteConnection::connect("sqlite::memory:")
