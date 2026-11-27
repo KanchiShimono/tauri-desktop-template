@@ -5,6 +5,9 @@ authors.workspace = true
 edition.workspace = true
 publish.workspace = true
 
+[features]
+test-support = []
+
 [dependencies]
 app.workspace = true
 domain.workspace = true
