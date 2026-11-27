@@ -13,6 +13,7 @@ use app::todo::view::TodoView;
 use jiff::Timestamp;
 use serde_json::Value;
 use serde_json::json;
+use store_sqlite::test_db;
 use uuid::Uuid;
 
 use super::ChangeTodoStatusRequest;
@@ -23,7 +24,6 @@ use super::ListArchivedTodosRequest;
 use super::ListArchivedTodosResponse;
 use super::TodoStatus;
 use crate::App;
-use crate::sqlite::test_db;
 
 fn edit(request: Value) -> UnvalidatedEditTodoInput {
     serde_json::from_value::<EditTodoRequest>(request)

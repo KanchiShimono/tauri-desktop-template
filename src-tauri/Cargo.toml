@@ -126,5 +126,6 @@ strip = true
 workspace = true
 
 [dev-dependencies]
+store-sqlite = { workspace = true, features = ["test-support"] }
 tauri = { version = "2", features = ["test"] }
 tokio = { workspace = true, features = ["macros", "rt"] }

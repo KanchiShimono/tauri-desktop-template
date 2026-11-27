@@ -8,13 +8,13 @@ use app::pagination::ListQuery;
 use app::pagination::Page;
 use app::pagination::UnvalidatedListQuery;
 use serde_json::json;
+use store_sqlite::test_db;
 use uuid::Uuid;
 
 use super::DeleteAssigneeRequest;
 use super::ListActiveAssigneesRequest;
 use super::ListActiveAssigneesResponse;
 use crate::App;
-use crate::sqlite::test_db;
 
 async fn views(count: usize) -> Vec<AssigneeView> {
     let app = App::new(test_db::store().await, SystemClock, UuidV7Generator);
