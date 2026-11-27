@@ -17,6 +17,7 @@ use std::io;
 
 use tauri::Builder;
 use tauri::Manager;
+use tauri::Wry;
 use tauri::async_runtime;
 use tracing::Level;
 use tracing_subscriber::fmt::writer::MakeWriterExt;
@@ -29,12 +30,6 @@ pub(crate) type App = app::App<Store, SystemClock, UuidV7Generator>;
 
 const DATABASE_FILE: &str = "kanban.sqlite3";
 
-// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() -> tauri::Result<()> {
     tracing_subscriber::fmt()
@@ -42,9 +37,11 @@ pub fn run() -> tauri::Result<()> {
         .with_writer(io::stderr.with_max_level(Level::WARN).or_else(io::stdout))
         .init();
 
+    let commands = cmd::builder::<Wry>();
+
     Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(commands.invoke_handler())
         .setup(|app| {
             let path = app.path().app_data_dir()?.join(DATABASE_FILE);
             let store = async_runtime::block_on(Store::open(&path)).inspect_err(|error| {
