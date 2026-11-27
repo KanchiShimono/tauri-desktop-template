@@ -1,6 +1,6 @@
 use std::cell::Cell;
 
-use super::Presence;
+use crate::presence::Presence;
 
 struct NonDefault;
 
@@ -23,7 +23,7 @@ const fn assert_const_methods_are_usable() {
     }
 }
 
-const _: () = self::assert_const_methods_are_usable();
+const _: () = assert_const_methods_are_usable();
 
 #[test]
 fn default_is_absent() {

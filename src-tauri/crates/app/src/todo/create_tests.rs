@@ -4,18 +4,18 @@ use domain::assignee::Assignee;
 use jiff::Timestamp;
 use uuid::Uuid;
 
-use super::CreateTodoCommand;
-use super::CreateTodoError;
-use super::UnvalidatedCreateTodoInput;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::port::PortError;
-use crate::app::port::assignee::Repository;
-use crate::app::port::todo::Query;
-use crate::app::testing;
-use crate::app::todo::view::TodoLifecycleView;
-use crate::app::todo::view::TodoStatusView;
-use crate::app::todo::view::TodoView;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::port::PortError;
+use crate::port::assignee::Repository;
+use crate::port::todo::Query;
+use crate::testing;
+use crate::todo::create::CreateTodoCommand;
+use crate::todo::create::CreateTodoError;
+use crate::todo::create::UnvalidatedCreateTodoInput;
+use crate::todo::view::TodoLifecycleView;
+use crate::todo::view::TodoStatusView;
+use crate::todo::view::TodoView;
 
 fn input(title: &str, description: Option<&str>) -> UnvalidatedCreateTodoInput {
     UnvalidatedCreateTodoInput {

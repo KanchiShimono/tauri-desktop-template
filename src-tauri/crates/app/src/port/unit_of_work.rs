@@ -3,7 +3,7 @@ use std::future::Future;
 
 use thiserror::Error;
 
-use super::PortError;
+use crate::port::PortError;
 
 #[derive(Debug, Error)]
 #[error("rollback failed after an operation error ({operation})")]
@@ -13,7 +13,7 @@ struct RollbackFailure<E> {
     rollback: PortError,
 }
 
-pub(crate) trait UnitOfWork: Send {
+pub trait UnitOfWork: Send {
     fn commit(self) -> impl Future<Output = Result<(), PortError>> + Send;
 
     fn rollback(self) -> impl Future<Output = Result<(), PortError>> + Send;
@@ -45,7 +45,7 @@ pub(crate) trait UnitOfWork: Send {
     }
 }
 
-pub(crate) trait UnitOfWorkFactory: Send + Sync {
+pub trait UnitOfWorkFactory: Send + Sync {
     type UnitOfWork: UnitOfWork;
 
     fn begin(&self) -> impl Future<Output = Result<Self::UnitOfWork, PortError>> + Send;

@@ -6,12 +6,12 @@ use domain::todo::Todo;
 use domain::todo::TodoId;
 use domain::todo::Undeleted;
 
-use crate::app::pagination::ListQuery;
-use crate::app::pagination::Page;
-use crate::app::port::PortError;
-use crate::app::port::UnitOfWork;
+use crate::pagination::ListQuery;
+use crate::pagination::Page;
+use crate::port::PortError;
+use crate::port::UnitOfWork;
 
-pub(crate) trait Query: Send + Sync {
+pub trait Query: Send + Sync {
     fn find(&self, id: TodoId) -> impl Future<Output = Result<Option<Todo>, PortError>> + Send;
 
     /// All active Todos, including collections larger than the paginated query limit.
@@ -26,7 +26,7 @@ pub(crate) trait Query: Send + Sync {
     ) -> impl Future<Output = Result<Page<Todo<Archived, Status>>, PortError>> + Send;
 }
 
-pub(crate) trait Repository: UnitOfWork {
+pub trait Repository: UnitOfWork {
     fn load_undeleted(
         &mut self,
         id: TodoId,

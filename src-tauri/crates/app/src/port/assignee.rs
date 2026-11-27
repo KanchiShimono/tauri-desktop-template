@@ -2,12 +2,12 @@ use domain::assignee::Active;
 use domain::assignee::Assignee;
 use domain::assignee::AssigneeId;
 
-use super::PortError;
-use super::UnitOfWork;
-use crate::app::pagination::ListQuery;
-use crate::app::pagination::Page;
+use crate::pagination::ListQuery;
+use crate::pagination::Page;
+use crate::port::PortError;
+use crate::port::UnitOfWork;
 
-pub(crate) trait Query: Send + Sync {
+pub trait Query: Send + Sync {
     fn find(
         &self,
         id: AssigneeId,
@@ -20,7 +20,7 @@ pub(crate) trait Query: Send + Sync {
     ) -> impl Future<Output = Result<Page<Assignee<Active>>, PortError>> + Send;
 }
 
-pub(crate) trait Repository: UnitOfWork {
+pub trait Repository: UnitOfWork {
     fn load_active(
         &mut self,
         id: AssigneeId,

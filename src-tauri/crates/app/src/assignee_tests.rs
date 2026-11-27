@@ -1,6 +1,7 @@
 use domain::assignee::AssigneeNameError;
 
-use crate::app::error::ErrorInfo;
+use crate::assignee;
+use crate::error::ErrorInfo;
 
 #[test]
 fn name_errors_name_their_field_and_public_code() {
@@ -13,7 +14,7 @@ fn name_errors_name_their_field_and_public_code() {
         (AssigneeNameError::TooLong, "too_long"),
     ] {
         assert!(matches!(
-            super::describe_invalid_name(&error),
+            assignee::describe_invalid_name(&error),
             ErrorInfo::InvalidInput(violations)
                 if violations.first.field == "name" && violations.first.reason.code == code
         ));

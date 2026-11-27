@@ -1,15 +1,15 @@
 use thiserror::Error;
 
-use super::error::AppError;
-use super::error::ErrorInfo;
-use super::error::FieldViolation;
-use super::error::Violations;
-use super::port::PortError;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::error::FieldViolation;
+use crate::error::Violations;
+use crate::port::PortError;
 
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct UnvalidatedListQuery {
-    pub(crate) limit: usize,
-    pub(crate) offset: usize,
+pub struct UnvalidatedListQuery {
+    pub limit: usize,
+    pub offset: usize,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -62,7 +62,7 @@ pub enum ListQueryError {
 
 /// The failures of every paginated list.
 #[derive(Debug, Error)]
-pub(crate) enum ListError {
+pub enum ListError {
     #[error(transparent)]
     InvalidQuery(#[from] ListQueryError),
     #[error(transparent)]
@@ -97,7 +97,7 @@ pub struct Page<T> {
 
 impl<T> Page<T> {
     /// A complete collection, including unpaged collections larger than a page limit.
-    pub fn complete(items: Vec<T>) -> Self {
+    pub(crate) fn complete(items: Vec<T>) -> Self {
         Self {
             items,
             next_offset: None,
@@ -133,7 +133,7 @@ impl<T> Page<T> {
     }
 
     #[must_use]
-    pub fn map<U>(self, f: impl FnMut(T) -> U) -> Page<U> {
+    pub(crate) fn map<U>(self, f: impl FnMut(T) -> U) -> Page<U> {
         Page {
             items: self.items.into_iter().map(f).collect(),
             next_offset: self.next_offset,

@@ -1,17 +1,17 @@
 use std::error::Error;
 
-use crate::app::port::PortError;
-use crate::app::port::UnitOfWork;
-use crate::app::port::UnitOfWorkFactory;
+use crate::port::PortError;
+use crate::port::UnitOfWork;
+use crate::port::UnitOfWorkFactory;
 
-pub(crate) struct App<S, C, I> {
-    store: S,
-    clock: C,
-    id_generator: I,
+pub struct App<S, C, I> {
+    pub(crate) store: S,
+    pub(crate) clock: C,
+    pub(crate) id_generator: I,
 }
 
 impl<S, C, I> App<S, C, I> {
-    pub(crate) fn new(store: S, clock: C, id_generator: I) -> Self {
+    pub fn new(store: S, clock: C, id_generator: I) -> Self {
         Self {
             store,
             clock,
@@ -21,7 +21,7 @@ impl<S, C, I> App<S, C, I> {
 }
 
 impl<S: UnitOfWorkFactory, C, I> App<S, C, I> {
-    async fn transact<T, E>(
+    pub(crate) async fn transact<T, E>(
         &self,
         work: impl AsyncFnOnce(&mut S::UnitOfWork) -> Result<T, E>,
     ) -> Result<T, E>

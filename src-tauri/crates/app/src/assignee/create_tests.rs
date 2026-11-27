@@ -1,16 +1,16 @@
 use jiff::Timestamp;
 use uuid::Uuid;
 
-use super::CreateAssigneeCommand;
-use super::CreateAssigneeError;
-use super::UnvalidatedCreateAssigneeInput;
-use crate::app::assignee::view::AssigneeLifecycleView;
-use crate::app::assignee::view::AssigneeView;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::port::PortError;
-use crate::app::port::assignee::Query;
-use crate::app::testing;
+use crate::assignee::create::CreateAssigneeCommand;
+use crate::assignee::create::CreateAssigneeError;
+use crate::assignee::create::UnvalidatedCreateAssigneeInput;
+use crate::assignee::view::AssigneeLifecycleView;
+use crate::assignee::view::AssigneeView;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::port::PortError;
+use crate::port::assignee::Query;
+use crate::testing;
 
 #[test]
 fn an_invalid_name_is_reported_as_a_violation_of_the_name() {

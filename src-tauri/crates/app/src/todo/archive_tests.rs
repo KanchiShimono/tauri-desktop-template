@@ -4,17 +4,17 @@ use domain::todo::Todo;
 use jiff::Timestamp;
 use uuid::Uuid;
 
-use super::ArchiveTodoError;
-use super::UnvalidatedArchiveTodoInput;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::port::PortError;
-use crate::app::port::todo::Query;
-use crate::app::port::todo::Repository;
-use crate::app::testing;
-use crate::app::testing::TestApp;
-use crate::app::todo::view::TodoLifecycleView;
-use crate::app::todo::view::TodoView;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::port::PortError;
+use crate::port::todo::Query;
+use crate::port::todo::Repository;
+use crate::testing;
+use crate::testing::TestApp;
+use crate::todo::archive::ArchiveTodoError;
+use crate::todo::archive::UnvalidatedArchiveTodoInput;
+use crate::todo::view::TodoLifecycleView;
+use crate::todo::view::TodoView;
 
 fn at(second: i64) -> Timestamp {
     Timestamp::from_second(second).expect("valid time")

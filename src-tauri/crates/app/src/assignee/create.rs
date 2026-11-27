@@ -5,19 +5,20 @@ use domain::assignee::AssigneeNameError;
 use jiff::Timestamp;
 use thiserror::Error;
 
-use super::view::AssigneeView;
 use crate::app::App;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::port::Clock;
-use crate::app::port::IdGenerator;
-use crate::app::port::PortError;
-use crate::app::port::UnitOfWorkFactory;
-use crate::app::port::assignee::Repository;
+use crate::assignee;
+use crate::assignee::view::AssigneeView;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::port::Clock;
+use crate::port::IdGenerator;
+use crate::port::PortError;
+use crate::port::UnitOfWorkFactory;
+use crate::port::assignee::Repository;
 
 #[derive(Clone, Debug)]
-pub(crate) struct UnvalidatedCreateAssigneeInput {
-    pub(crate) name: String,
+pub struct UnvalidatedCreateAssigneeInput {
+    pub name: String,
 }
 
 #[derive(Debug)]
@@ -26,7 +27,7 @@ struct CreateAssigneeCommand {
 }
 
 #[derive(Debug, Error)]
-pub(crate) enum CreateAssigneeError {
+pub enum CreateAssigneeError {
     #[error("The name is invalid.")]
     InvalidName(#[from] AssigneeNameError),
     #[error(transparent)]
@@ -36,7 +37,7 @@ pub(crate) enum CreateAssigneeError {
 impl AppError for CreateAssigneeError {
     fn describe(&self) -> ErrorInfo {
         match self {
-            Self::InvalidName(error) => super::describe_invalid_name(error),
+            Self::InvalidName(error) => assignee::describe_invalid_name(error),
             Self::Port(error) => error.describe(),
         }
     }
@@ -59,7 +60,7 @@ where
     C: Clock,
     I: IdGenerator<AssigneeId>,
 {
-    pub(crate) async fn create_assignee(
+    pub async fn create_assignee(
         &self,
         input: UnvalidatedCreateAssigneeInput,
     ) -> Result<AssigneeView, CreateAssigneeError> {

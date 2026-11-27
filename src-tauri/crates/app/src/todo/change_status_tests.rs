@@ -4,18 +4,18 @@ use domain::todo::Todo;
 use jiff::Timestamp;
 use uuid::Uuid;
 
-use super::ChangeTodoStatusError;
-use super::TodoStatusInput;
-use super::UnvalidatedChangeTodoStatusInput;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::port::PortError;
-use crate::app::port::todo::Query;
-use crate::app::port::todo::Repository;
-use crate::app::testing;
-use crate::app::testing::TestApp;
-use crate::app::todo::view::TodoStatusView;
-use crate::app::todo::view::TodoView;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::port::PortError;
+use crate::port::todo::Query;
+use crate::port::todo::Repository;
+use crate::testing;
+use crate::testing::TestApp;
+use crate::todo::change_status::ChangeTodoStatusError;
+use crate::todo::change_status::TodoStatusInput;
+use crate::todo::change_status::UnvalidatedChangeTodoStatusInput;
+use crate::todo::view::TodoStatusView;
+use crate::todo::view::TodoView;
 
 fn new_todo() -> Todo<Active, NotStarted> {
     Todo::new(

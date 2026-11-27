@@ -6,16 +6,16 @@ use domain::todo::Todo;
 use jiff::Timestamp;
 use uuid::Uuid;
 
-use super::AssignedTodoPolicy;
-use super::DeleteAssigneeError;
-use super::UnvalidatedDeleteAssigneeInput;
-use crate::app::assignee::view::AssigneeLifecycleView;
-use crate::app::assignee::view::AssigneeView;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::port;
-use crate::app::port::PortError;
-use crate::app::testing;
+use crate::assignee::delete::AssignedTodoPolicy;
+use crate::assignee::delete::DeleteAssigneeError;
+use crate::assignee::delete::UnvalidatedDeleteAssigneeInput;
+use crate::assignee::view::AssigneeLifecycleView;
+use crate::assignee::view::AssigneeView;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::port;
+use crate::port::PortError;
+use crate::testing;
 
 fn new_assignee(id: u128) -> Assignee<assignee::Active> {
     Assignee::new(

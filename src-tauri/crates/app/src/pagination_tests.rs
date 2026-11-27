@@ -1,10 +1,10 @@
-use super::ListError;
-use super::ListQuery;
-use super::Page;
-use super::UnvalidatedListQuery;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::port::PortError;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::pagination::ListError;
+use crate::pagination::ListQuery;
+use crate::pagination::Page;
+use crate::pagination::UnvalidatedListQuery;
+use crate::port::PortError;
 
 #[test]
 fn list_query_accepts_its_valid_boundaries() {

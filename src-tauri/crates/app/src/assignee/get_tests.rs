@@ -2,13 +2,13 @@ use domain::assignee::Assignee;
 use jiff::Timestamp;
 use uuid::Uuid;
 
-use super::GetAssigneeError;
-use crate::app::assignee::view::AssigneeView;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::port::PortError;
-use crate::app::port::assignee::Repository;
-use crate::app::testing;
+use crate::assignee::get::GetAssigneeError;
+use crate::assignee::view::AssigneeView;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::port::PortError;
+use crate::port::assignee::Repository;
+use crate::testing;
 
 #[test]
 fn a_storage_failure_is_described_by_the_port() {

@@ -2,16 +2,16 @@ use domain::assignee::Assignee;
 use jiff::Timestamp;
 use uuid::Uuid;
 
-use super::RenameAssigneeCommand;
-use super::RenameAssigneeError;
-use super::UnvalidatedRenameAssigneeInput;
-use crate::app::assignee::view::AssigneeView;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::port::PortError;
-use crate::app::port::assignee::Query;
-use crate::app::port::assignee::Repository;
-use crate::app::testing;
+use crate::assignee::rename::RenameAssigneeCommand;
+use crate::assignee::rename::RenameAssigneeError;
+use crate::assignee::rename::UnvalidatedRenameAssigneeInput;
+use crate::assignee::view::AssigneeView;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::port::PortError;
+use crate::port::assignee::Query;
+use crate::port::assignee::Repository;
+use crate::testing;
 
 #[test]
 fn an_invalid_name_is_reported_as_a_violation_of_the_name() {

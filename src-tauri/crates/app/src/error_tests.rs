@@ -1,13 +1,13 @@
 use std::error::Error;
 
-use super::AppError;
-use super::ErrorInfo;
-use super::FieldViolation;
-use super::PublicReason;
-use super::Violations;
-use crate::app::pagination::ListQuery;
-use crate::app::pagination::Page;
-use crate::app::port::PortError;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::error::FieldViolation;
+use crate::error::PublicReason;
+use crate::error::Violations;
+use crate::pagination::ListQuery;
+use crate::pagination::Page;
+use crate::port::PortError;
 
 #[test]
 fn resource_and_conflict_errors_expose_their_specific_reason() {

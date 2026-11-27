@@ -2,12 +2,12 @@ use std::error;
 
 use thiserror::Error;
 
-use crate::app::pagination::NextOffsetOverflow;
+use crate::pagination::NextOffsetOverflow;
 
 type BoxError = Box<dyn error::Error + Send + Sync>;
 
 #[derive(Debug, Error)]
-pub(crate) enum PortError {
+pub enum PortError {
     #[error("the storage is busy")]
     Busy(#[source] BoxError),
 

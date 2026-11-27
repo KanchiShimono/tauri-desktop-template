@@ -1,7 +1,7 @@
 use domain::todo::TodoDescriptionError;
 use domain::todo::TodoTitleError;
 
-use super::TodoFieldError;
+use crate::todo::TodoFieldError;
 
 #[test]
 fn field_errors_name_their_field_and_public_code() {

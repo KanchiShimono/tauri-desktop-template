@@ -6,25 +6,25 @@ use jiff::Timestamp;
 use thiserror::Error;
 use uuid::Uuid;
 
-use super::TodoArchived;
-use super::TodoNotFound;
-use super::view::TodoView;
 use crate::app::App;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::port::Clock;
-use crate::app::port::PortError;
-use crate::app::port::UnitOfWorkFactory;
-use crate::app::port::todo::Repository;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::port::Clock;
+use crate::port::PortError;
+use crate::port::UnitOfWorkFactory;
+use crate::port::todo::Repository;
+use crate::todo::TodoArchived;
+use crate::todo::TodoNotFound;
+use crate::todo::view::TodoView;
 
 #[derive(Clone, Debug)]
-pub(crate) struct UnvalidatedChangeTodoStatusInput {
-    pub(crate) id: Uuid,
-    pub(crate) status: TodoStatusInput,
+pub struct UnvalidatedChangeTodoStatusInput {
+    pub id: Uuid,
+    pub status: TodoStatusInput,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum TodoStatusInput {
+pub enum TodoStatusInput {
     NotStarted,
     InProgress,
     Done,
@@ -37,7 +37,7 @@ struct ChangeTodoStatusCommand {
 }
 
 #[derive(Debug, Error)]
-pub(crate) enum ChangeTodoStatusError {
+pub enum ChangeTodoStatusError {
     #[error(transparent)]
     NotFound(#[from] TodoNotFound),
     #[error(transparent)]
@@ -81,7 +81,7 @@ where
     S::UnitOfWork: Repository,
     C: Clock,
 {
-    pub(crate) async fn change_todo_status(
+    pub async fn change_todo_status(
         &self,
         input: UnvalidatedChangeTodoStatusInput,
     ) -> Result<TodoView, ChangeTodoStatusError> {

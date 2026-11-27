@@ -4,18 +4,18 @@ use domain::todo::TodoId;
 use thiserror::Error;
 use uuid::Uuid;
 
-use super::TodoNotFound;
-use super::view::TodoView;
 use crate::app::App;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::port::PortError;
-use crate::app::port::UnitOfWorkFactory;
-use crate::app::port::todo::Repository;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::port::PortError;
+use crate::port::UnitOfWorkFactory;
+use crate::port::todo::Repository;
+use crate::todo::TodoNotFound;
+use crate::todo::view::TodoView;
 
 #[derive(Clone, Debug)]
-pub(crate) struct UnvalidatedUnarchiveTodoInput {
-    pub(crate) id: Uuid,
+pub struct UnvalidatedUnarchiveTodoInput {
+    pub id: Uuid,
 }
 
 #[derive(Debug)]
@@ -24,7 +24,7 @@ struct UnarchiveTodoCommand {
 }
 
 #[derive(Debug, Error)]
-pub(crate) enum UnarchiveTodoError {
+pub enum UnarchiveTodoError {
     #[error(transparent)]
     NotFound(#[from] TodoNotFound),
     #[error(transparent)]
@@ -53,7 +53,7 @@ where
     S: UnitOfWorkFactory,
     S::UnitOfWork: Repository,
 {
-    pub(crate) async fn unarchive_todo(
+    pub async fn unarchive_todo(
         &self,
         input: UnvalidatedUnarchiveTodoInput,
     ) -> Result<TodoView, UnarchiveTodoError> {

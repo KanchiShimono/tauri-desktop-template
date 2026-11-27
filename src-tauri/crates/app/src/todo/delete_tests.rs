@@ -2,16 +2,16 @@ use domain::todo::Todo;
 use jiff::Timestamp;
 use uuid::Uuid;
 
-use super::DeleteTodoError;
-use super::UnvalidatedDeleteTodoInput;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::port::PortError;
-use crate::app::port::todo::Query;
-use crate::app::port::todo::Repository;
-use crate::app::testing;
-use crate::app::todo::view::TodoLifecycleView;
-use crate::app::todo::view::TodoView;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::port::PortError;
+use crate::port::todo::Query;
+use crate::port::todo::Repository;
+use crate::testing;
+use crate::todo::delete::DeleteTodoError;
+use crate::todo::delete::UnvalidatedDeleteTodoInput;
+use crate::todo::view::TodoLifecycleView;
+use crate::todo::view::TodoView;
 
 #[test]
 fn a_storage_failure_is_described_by_the_port() {

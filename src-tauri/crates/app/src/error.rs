@@ -1,14 +1,14 @@
 use std::error::Error;
 
-use super::port::PortError;
+use crate::port::PortError;
 
-pub(crate) trait AppError: Error + Send + Sync + 'static {
+pub trait AppError: Error + Send + Sync + 'static {
     /// Describes the failure using only information suitable for callers.
     fn describe(&self) -> ErrorInfo;
 }
 
 #[derive(Debug, Eq, PartialEq)]
-pub(crate) enum ErrorInfo {
+pub enum ErrorInfo {
     InvalidInput(Violations<FieldViolation>),
     NotFound(PublicReason),
     Conflict(PublicReason),
@@ -17,7 +17,7 @@ pub(crate) enum ErrorInfo {
 }
 
 impl ErrorInfo {
-    pub(crate) const fn code(&self) -> &'static str {
+    pub const fn code(&self) -> &'static str {
         match self {
             Self::InvalidInput(_) => "invalid_input",
             Self::NotFound(reason) | Self::Conflict(reason) => reason.code,
@@ -26,7 +26,7 @@ impl ErrorInfo {
         }
     }
 
-    pub(crate) fn message(&self) -> &str {
+    pub fn message(&self) -> &str {
         match self {
             Self::InvalidInput(_) => "The input is invalid.",
             Self::NotFound(reason) | Self::Conflict(reason) => &reason.message,
@@ -37,9 +37,9 @@ impl ErrorInfo {
 }
 
 #[derive(Debug, Eq, PartialEq)]
-pub(crate) struct Violations<T> {
-    pub(crate) first: T,
-    pub(crate) rest: Vec<T>,
+pub struct Violations<T> {
+    pub first: T,
+    pub rest: Vec<T>,
 }
 
 impl<T> Violations<T> {
@@ -59,13 +59,13 @@ impl<T> Violations<T> {
 }
 
 #[derive(Debug, Eq, PartialEq)]
-pub(crate) struct FieldViolation {
-    pub(crate) field: &'static str,
-    pub(crate) reason: PublicReason,
+pub struct FieldViolation {
+    pub field: &'static str,
+    pub reason: PublicReason,
 }
 
 impl FieldViolation {
-    pub(crate) fn new(field: &'static str, code: &'static str, message: String) -> Self {
+    pub fn new(field: &'static str, code: &'static str, message: String) -> Self {
         Self {
             field,
             reason: PublicReason { code, message },
@@ -74,10 +74,10 @@ impl FieldViolation {
 }
 
 #[derive(Debug, Eq, PartialEq)]
-pub(crate) struct PublicReason {
+pub struct PublicReason {
     /// Stable, lower_snake_case identifier for programmatic use.
-    pub(crate) code: &'static str,
-    pub(crate) message: String,
+    pub code: &'static str,
+    pub message: String,
 }
 
 impl AppError for PortError {

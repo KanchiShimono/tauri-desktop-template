@@ -5,19 +5,19 @@ use jiff::Timestamp;
 use thiserror::Error;
 use uuid::Uuid;
 
-use super::TodoNotFound;
-use super::view::TodoView;
 use crate::app::App;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::port::Clock;
-use crate::app::port::PortError;
-use crate::app::port::UnitOfWorkFactory;
-use crate::app::port::todo::Repository;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::port::Clock;
+use crate::port::PortError;
+use crate::port::UnitOfWorkFactory;
+use crate::port::todo::Repository;
+use crate::todo::TodoNotFound;
+use crate::todo::view::TodoView;
 
 #[derive(Clone, Debug)]
-pub(crate) struct UnvalidatedArchiveTodoInput {
-    pub(crate) id: Uuid,
+pub struct UnvalidatedArchiveTodoInput {
+    pub id: Uuid,
 }
 
 #[derive(Debug)]
@@ -26,7 +26,7 @@ struct ArchiveTodoCommand {
 }
 
 #[derive(Debug, Error)]
-pub(crate) enum ArchiveTodoError {
+pub enum ArchiveTodoError {
     #[error(transparent)]
     NotFound(#[from] TodoNotFound),
     #[error(transparent)]
@@ -56,7 +56,7 @@ where
     S::UnitOfWork: Repository,
     C: Clock,
 {
-    pub(crate) async fn archive_todo(
+    pub async fn archive_todo(
         &self,
         input: UnvalidatedArchiveTodoInput,
     ) -> Result<TodoView, ArchiveTodoError> {

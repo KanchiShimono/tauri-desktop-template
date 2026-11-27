@@ -1,8 +1,8 @@
 use uuid::Uuid;
 
-use super::port::IdGenerator;
+use crate::port::IdGenerator;
 
-pub(crate) struct UuidV7Generator;
+pub struct UuidV7Generator;
 
 impl<Id: From<Uuid>> IdGenerator<Id> for UuidV7Generator {
     fn generate(&self) -> Id {

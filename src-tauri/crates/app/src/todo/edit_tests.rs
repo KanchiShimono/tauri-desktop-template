@@ -10,19 +10,21 @@ use domain::todo::Todo;
 use jiff::Timestamp;
 use uuid::Uuid;
 
-use super::EditTodoCommand;
-use super::EditTodoError;
-use super::UnvalidatedEditTodoInput;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::port::PortError;
-use crate::app::port::assignee;
-use crate::app::port::todo;
-use crate::app::presence::Presence;
-use crate::app::testing;
-use crate::app::testing::TestApp;
-use crate::app::todo::view::TodoStatusView;
-use crate::app::todo::view::TodoView;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::port::PortError;
+use crate::port::assignee;
+use crate::port::todo;
+use crate::port::todo::Query;
+use crate::presence::Presence;
+use crate::testing;
+use crate::testing::TestApp;
+use crate::todo::edit;
+use crate::todo::edit::EditTodoCommand;
+use crate::todo::edit::EditTodoError;
+use crate::todo::edit::UnvalidatedEditTodoInput;
+use crate::todo::view::TodoStatusView;
+use crate::todo::view::TodoView;
 
 fn at(second: i64) -> Timestamp {
     Timestamp::from_second(second).expect("valid time")
@@ -109,7 +111,7 @@ fn a_recorded_time_can_be_corrected_only_in_a_status_that_has_it() {
         (in_progress.clone(), Some(start), None, Ok(started)),
         (in_progress, None, Some(completion), no_completion),
     ] {
-        let changed = super::change_recorded_times(todo, started_at.into(), completed_at.into())
+        let changed = edit::change_recorded_times(todo, started_at.into(), completed_at.into())
             .map_err(|error| violations(&error));
         assert_eq!(changed, expected);
     }
@@ -166,9 +168,7 @@ async fn every_present_field_replaces_the_stored_value() {
             completed_at: at(20),
         }
     );
-    let stored = todo::Query::find(&app.store, todo.id())
-        .await
-        .expect("query");
+    let stored = Query::find(&app.store, todo.id()).await.expect("query");
     assert_eq!(stored.as_ref().map(TodoView::from), Some(edited));
 }
 

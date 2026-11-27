@@ -5,19 +5,20 @@ use domain::assignee::AssigneeNameError;
 use thiserror::Error;
 use uuid::Uuid;
 
-use super::AssigneeNotFound;
-use super::view::AssigneeView;
 use crate::app::App;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::port::PortError;
-use crate::app::port::UnitOfWorkFactory;
-use crate::app::port::assignee::Repository;
+use crate::assignee;
+use crate::assignee::AssigneeNotFound;
+use crate::assignee::view::AssigneeView;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::port::PortError;
+use crate::port::UnitOfWorkFactory;
+use crate::port::assignee::Repository;
 
 #[derive(Clone, Debug)]
-pub(crate) struct UnvalidatedRenameAssigneeInput {
-    pub(crate) id: Uuid,
-    pub(crate) name: String,
+pub struct UnvalidatedRenameAssigneeInput {
+    pub id: Uuid,
+    pub name: String,
 }
 
 #[derive(Debug)]
@@ -27,7 +28,7 @@ struct RenameAssigneeCommand {
 }
 
 #[derive(Debug, Error)]
-pub(crate) enum RenameAssigneeError {
+pub enum RenameAssigneeError {
     #[error("The name is invalid.")]
     InvalidName(#[from] AssigneeNameError),
     #[error(transparent)]
@@ -39,7 +40,7 @@ pub(crate) enum RenameAssigneeError {
 impl AppError for RenameAssigneeError {
     fn describe(&self) -> ErrorInfo {
         match self {
-            Self::InvalidName(error) => super::describe_invalid_name(error),
+            Self::InvalidName(error) => assignee::describe_invalid_name(error),
             Self::NotFound(error) => error.describe(),
             Self::Port(error) => error.describe(),
         }
@@ -62,7 +63,7 @@ where
     S: UnitOfWorkFactory,
     S::UnitOfWork: Repository,
 {
-    pub(crate) async fn rename_assignee(
+    pub async fn rename_assignee(
         &self,
         input: UnvalidatedRenameAssigneeInput,
     ) -> Result<AssigneeView, RenameAssigneeError> {

@@ -1,16 +1,16 @@
-use super::view::AssigneeView;
 use crate::app::App;
-use crate::app::pagination::ListError;
-use crate::app::pagination::ListQuery;
-use crate::app::pagination::Page;
-use crate::app::pagination::UnvalidatedListQuery;
-use crate::app::port::assignee::Query;
+use crate::assignee::view::AssigneeView;
+use crate::pagination::ListError;
+use crate::pagination::ListQuery;
+use crate::pagination::Page;
+use crate::pagination::UnvalidatedListQuery;
+use crate::port::assignee::Query;
 
 impl<S, C, I> App<S, C, I>
 where
     S: Query,
 {
-    pub(crate) async fn list_active_assignees(
+    pub async fn list_active_assignees(
         &self,
         query: UnvalidatedListQuery,
     ) -> Result<Page<AssigneeView>, ListError> {

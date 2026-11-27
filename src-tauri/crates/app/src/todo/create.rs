@@ -8,26 +8,26 @@ use jiff::Timestamp;
 use thiserror::Error;
 use uuid::Uuid;
 
-use super::TodoFieldError;
-use super::view::TodoView;
 use crate::app::App;
-use crate::app::assignee::AssigneeNotFound;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::error::Violations;
-use crate::app::port::Clock;
-use crate::app::port::IdGenerator;
-use crate::app::port::PortError;
-use crate::app::port::UnitOfWorkFactory;
-use crate::app::port::assignee;
-use crate::app::port::todo;
+use crate::assignee::AssigneeNotFound;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::error::Violations;
+use crate::port::Clock;
+use crate::port::IdGenerator;
+use crate::port::PortError;
+use crate::port::UnitOfWorkFactory;
+use crate::port::assignee;
+use crate::port::todo;
+use crate::todo::TodoFieldError;
+use crate::todo::view::TodoView;
 
 #[derive(Clone, Debug)]
-pub(crate) struct UnvalidatedCreateTodoInput {
-    pub(crate) title: String,
-    pub(crate) description: Option<String>,
-    pub(crate) assignee_id: Option<Uuid>,
-    pub(crate) due_at: Option<Timestamp>,
+pub struct UnvalidatedCreateTodoInput {
+    pub title: String,
+    pub description: Option<String>,
+    pub assignee_id: Option<Uuid>,
+    pub due_at: Option<Timestamp>,
 }
 
 #[derive(Debug)]
@@ -39,7 +39,7 @@ struct CreateTodoCommand {
 }
 
 #[derive(Debug, Error)]
-pub(crate) enum CreateTodoError {
+pub enum CreateTodoError {
     #[error("The input is invalid.")]
     InvalidInput(Violations<TodoFieldError>),
     #[error(transparent)]
@@ -50,11 +50,13 @@ pub(crate) enum CreateTodoError {
 
 impl AppError for CreateTodoError {
     fn describe(&self) -> ErrorInfo {
+        use crate::todo;
+
         match self {
             Self::InvalidInput(violations) => {
                 ErrorInfo::InvalidInput(violations.map_ref(TodoFieldError::describe))
             }
-            Self::AssigneeNotFound(error) => super::describe_unknown_assignee(error),
+            Self::AssigneeNotFound(error) => todo::describe_unknown_assignee(error),
             Self::Port(error) => error.describe(),
         }
     }
@@ -94,7 +96,7 @@ where
     C: Clock,
     I: IdGenerator<TodoId>,
 {
-    pub(crate) async fn create_todo(
+    pub async fn create_todo(
         &self,
         input: UnvalidatedCreateTodoInput,
     ) -> Result<TodoView, CreateTodoError> {

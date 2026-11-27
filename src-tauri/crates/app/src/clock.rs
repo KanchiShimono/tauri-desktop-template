@@ -1,8 +1,8 @@
 use jiff::Timestamp;
 
-use super::port::Clock;
+use crate::port::Clock;
 
-pub(crate) struct SystemClock;
+pub struct SystemClock;
 
 impl Clock for SystemClock {
     fn now(&self) -> Timestamp {

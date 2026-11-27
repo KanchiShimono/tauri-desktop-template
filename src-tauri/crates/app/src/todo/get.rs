@@ -2,16 +2,16 @@ use domain::todo::TodoId;
 use thiserror::Error;
 use uuid::Uuid;
 
-use super::TodoNotFound;
-use super::view::TodoView;
 use crate::app::App;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::port::PortError;
-use crate::app::port::todo::Query;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::port::PortError;
+use crate::port::todo::Query;
+use crate::todo::TodoNotFound;
+use crate::todo::view::TodoView;
 
 #[derive(Debug, Error)]
-pub(crate) enum GetTodoError {
+pub enum GetTodoError {
     #[error(transparent)]
     NotFound(#[from] TodoNotFound),
     #[error(transparent)]
@@ -31,7 +31,7 @@ impl<S, C, I> App<S, C, I>
 where
     S: Query,
 {
-    pub(crate) async fn get_todo(&self, id: Uuid) -> Result<TodoView, GetTodoError> {
+    pub async fn get_todo(&self, id: Uuid) -> Result<TodoView, GetTodoError> {
         let id = TodoId::from(id);
         let todo = self.store.find(id).await?.ok_or(TodoNotFound(id))?;
         Ok(TodoView::from(&todo))

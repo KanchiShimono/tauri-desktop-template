@@ -2,16 +2,16 @@ use domain::assignee::AssigneeId;
 use thiserror::Error;
 use uuid::Uuid;
 
-use super::view::AssigneeView;
 use crate::app::App;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::error::PublicReason;
-use crate::app::port::PortError;
-use crate::app::port::assignee::Query;
+use crate::assignee::view::AssigneeView;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::error::PublicReason;
+use crate::port::PortError;
+use crate::port::assignee::Query;
 
 #[derive(Debug, Error)]
-pub(crate) enum GetAssigneeError {
+pub enum GetAssigneeError {
     #[error("No assignee matches {0}.")]
     NotFound(AssigneeId),
     #[error(transparent)]
@@ -34,7 +34,7 @@ impl<S, C, I> App<S, C, I>
 where
     S: Query,
 {
-    pub(crate) async fn get_assignee(&self, id: Uuid) -> Result<AssigneeView, GetAssigneeError> {
+    pub async fn get_assignee(&self, id: Uuid) -> Result<AssigneeView, GetAssigneeError> {
         let id = AssigneeId::from(id);
         let assignee = self
             .store

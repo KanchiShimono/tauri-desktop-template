@@ -4,7 +4,7 @@ use domain::assignee::LifecycleState;
 use jiff::Timestamp;
 use uuid::Uuid;
 
-use crate::app::pagination::Page;
+use crate::pagination::Page;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct AssigneeView {

@@ -1,28 +1,28 @@
-pub(crate) mod archive;
-pub(crate) mod change_status;
-pub(crate) mod create;
-pub(crate) mod delete;
-pub(crate) mod edit;
-pub(crate) mod get;
+pub mod archive;
+pub mod change_status;
+pub mod create;
+pub mod delete;
+pub mod edit;
+pub mod get;
 mod list_active;
 mod list_archived;
-pub(crate) mod unarchive;
-pub(crate) mod view;
+pub mod unarchive;
+pub mod view;
 
 use domain::todo::TodoDescriptionError;
 use domain::todo::TodoId;
 use domain::todo::TodoTitleError;
 use thiserror::Error;
 
-use super::assignee::AssigneeNotFound;
-use super::error::AppError;
-use super::error::ErrorInfo;
-use super::error::FieldViolation;
-use super::error::PublicReason;
-use super::error::Violations;
+use crate::assignee::AssigneeNotFound;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::error::FieldViolation;
+use crate::error::PublicReason;
+use crate::error::Violations;
 
 #[derive(Debug, Eq, PartialEq)]
-pub(crate) enum TodoFieldError {
+pub enum TodoFieldError {
     Title(TodoTitleError),
     Description(TodoDescriptionError),
 }
@@ -52,7 +52,7 @@ impl TodoFieldError {
 
 #[derive(Debug, Eq, Error, PartialEq)]
 #[error("No Todo matches {0}.")]
-pub(crate) struct TodoNotFound(pub(crate) TodoId);
+pub struct TodoNotFound(pub TodoId);
 
 impl AppError for TodoNotFound {
     fn describe(&self) -> ErrorInfo {
@@ -65,7 +65,7 @@ impl AppError for TodoNotFound {
 
 #[derive(Debug, Eq, Error, PartialEq)]
 #[error("Todo {0} is archived.")]
-pub(crate) struct TodoArchived(pub(crate) TodoId);
+pub struct TodoArchived(TodoId);
 
 impl AppError for TodoArchived {
     fn describe(&self) -> ErrorInfo {

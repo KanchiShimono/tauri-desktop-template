@@ -4,26 +4,26 @@ use jiff::Timestamp;
 use thiserror::Error;
 use uuid::Uuid;
 
-use super::AssigneeNotFound;
-use super::view::AssigneeView;
 use crate::app::App;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::error::PublicReason;
-use crate::app::port::Clock;
-use crate::app::port::PortError;
-use crate::app::port::UnitOfWorkFactory;
-use crate::app::port::assignee;
-use crate::app::port::todo;
+use crate::assignee::AssigneeNotFound;
+use crate::assignee::view::AssigneeView;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::error::PublicReason;
+use crate::port::Clock;
+use crate::port::PortError;
+use crate::port::UnitOfWorkFactory;
+use crate::port::assignee;
+use crate::port::todo;
 
 #[derive(Clone, Debug)]
-pub(crate) struct UnvalidatedDeleteAssigneeInput {
-    pub(crate) id: Uuid,
-    pub(crate) assigned_todo_policy: AssignedTodoPolicy,
+pub struct UnvalidatedDeleteAssigneeInput {
+    pub id: Uuid,
+    pub assigned_todo_policy: AssignedTodoPolicy,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum AssignedTodoPolicy {
+pub enum AssignedTodoPolicy {
     Reject,
     Unassign,
 }
@@ -35,7 +35,7 @@ struct DeleteAssigneeCommand {
 }
 
 #[derive(Debug, Error)]
-pub(crate) enum DeleteAssigneeError {
+pub enum DeleteAssigneeError {
     #[error(transparent)]
     NotFound(#[from] AssigneeNotFound),
     #[error("Assignee {0} still has Todos.")]
@@ -72,7 +72,7 @@ where
     S::UnitOfWork: assignee::Repository + todo::Repository,
     C: Clock,
 {
-    pub(crate) async fn delete_assignee(
+    pub async fn delete_assignee(
         &self,
         input: UnvalidatedDeleteAssigneeInput,
     ) -> Result<AssigneeView, DeleteAssigneeError> {

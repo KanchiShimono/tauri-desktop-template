@@ -2,10 +2,10 @@ use domain::assignee::Assignee;
 use jiff::Timestamp;
 use uuid::Uuid;
 
-use super::AssigneeLifecycleView;
-use super::AssigneeView;
-use crate::app::pagination::ListQuery;
-use crate::app::pagination::Page;
+use crate::assignee::view::AssigneeLifecycleView;
+use crate::assignee::view::AssigneeView;
+use crate::pagination::ListQuery;
+use crate::pagination::Page;
 
 #[test]
 fn active_and_deleted_views_preserve_the_recorded_fields() {

@@ -1,5 +1,5 @@
 use jiff::Timestamp;
 
-pub(crate) trait Clock: Send + Sync {
+pub trait Clock: Send + Sync {
     fn now(&self) -> Timestamp;
 }

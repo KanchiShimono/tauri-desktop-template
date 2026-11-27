@@ -1,3 +1,3 @@
-pub(crate) trait IdGenerator<Id>: Send + Sync {
+pub trait IdGenerator<Id>: Send + Sync {
     fn generate(&self) -> Id;
 }

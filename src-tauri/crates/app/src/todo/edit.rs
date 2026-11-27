@@ -16,31 +16,31 @@ use jiff::Timestamp;
 use thiserror::Error;
 use uuid::Uuid;
 
-use super::TodoArchived;
-use super::TodoFieldError;
-use super::TodoNotFound;
-use super::view::TodoView;
 use crate::app::App;
-use crate::app::assignee::AssigneeNotFound;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::error::FieldViolation;
-use crate::app::error::Violations;
-use crate::app::port::PortError;
-use crate::app::port::UnitOfWorkFactory;
-use crate::app::port::assignee;
-use crate::app::port::todo;
-use crate::app::presence::Presence;
+use crate::assignee::AssigneeNotFound;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::error::FieldViolation;
+use crate::error::Violations;
+use crate::port::PortError;
+use crate::port::UnitOfWorkFactory;
+use crate::port::assignee;
+use crate::port::todo;
+use crate::presence::Presence;
+use crate::todo::TodoArchived;
+use crate::todo::TodoFieldError;
+use crate::todo::TodoNotFound;
+use crate::todo::view::TodoView;
 
 #[derive(Clone, Debug)]
-pub(crate) struct UnvalidatedEditTodoInput {
-    pub(crate) id: Uuid,
-    pub(crate) title: Presence<String>,
-    pub(crate) description: Presence<Option<String>>,
-    pub(crate) assignee_id: Presence<Option<Uuid>>,
-    pub(crate) due_at: Presence<Option<Timestamp>>,
-    pub(crate) started_at: Presence<Timestamp>,
-    pub(crate) completed_at: Presence<Timestamp>,
+pub struct UnvalidatedEditTodoInput {
+    pub id: Uuid,
+    pub title: Presence<String>,
+    pub description: Presence<Option<String>>,
+    pub assignee_id: Presence<Option<Uuid>>,
+    pub due_at: Presence<Option<Timestamp>>,
+    pub started_at: Presence<Timestamp>,
+    pub completed_at: Presence<Timestamp>,
 }
 
 #[derive(Debug)]
@@ -55,7 +55,7 @@ struct EditTodoCommand {
 }
 
 #[derive(Debug, Error)]
-pub(crate) enum EditTodoError {
+pub enum EditTodoError {
     #[error("The input is invalid.")]
     InvalidInput(Violations<TodoFieldError>),
     #[error(transparent)]
@@ -74,13 +74,15 @@ pub(crate) enum EditTodoError {
 
 impl AppError for EditTodoError {
     fn describe(&self) -> ErrorInfo {
+        use crate::todo;
+
         match self {
             Self::InvalidInput(violations) => {
                 ErrorInfo::InvalidInput(violations.map_ref(TodoFieldError::describe))
             }
             Self::NotFound(error) => error.describe(),
             Self::Archived(error) => error.describe(),
-            Self::AssigneeNotFound(error) => super::describe_unknown_assignee(error),
+            Self::AssigneeNotFound(error) => todo::describe_unknown_assignee(error),
             Self::NotStarted => ErrorInfo::InvalidInput(Violations::one(FieldViolation::new(
                 "started_at",
                 "not_started",
@@ -139,7 +141,7 @@ where
     S: UnitOfWorkFactory,
     S::UnitOfWork: assignee::Repository + todo::Repository,
 {
-    pub(crate) async fn edit_todo(
+    pub async fn edit_todo(
         &self,
         input: UnvalidatedEditTodoInput,
     ) -> Result<TodoView, EditTodoError> {

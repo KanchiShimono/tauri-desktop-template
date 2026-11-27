@@ -1,16 +1,16 @@
-use super::view::TodoView;
 use crate::app::App;
-use crate::app::pagination::ListError;
-use crate::app::pagination::ListQuery;
-use crate::app::pagination::Page;
-use crate::app::pagination::UnvalidatedListQuery;
-use crate::app::port::todo::Query;
+use crate::pagination::ListError;
+use crate::pagination::ListQuery;
+use crate::pagination::Page;
+use crate::pagination::UnvalidatedListQuery;
+use crate::port::todo::Query;
+use crate::todo::view::TodoView;
 
 impl<S, C, I> App<S, C, I>
 where
     S: Query,
 {
-    pub(crate) async fn list_archived_todos(
+    pub async fn list_archived_todos(
         &self,
         query: UnvalidatedListQuery,
     ) -> Result<Page<TodoView>, ListError> {
