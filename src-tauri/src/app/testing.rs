@@ -6,6 +6,17 @@ use std::sync::Mutex;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering as AtomicOrdering;
 
+use domain::assignee;
+use domain::assignee::Assignee;
+use domain::assignee::AssigneeByLifecycle;
+use domain::assignee::AssigneeId;
+use domain::todo::Active;
+use domain::todo::Archived;
+use domain::todo::Status;
+use domain::todo::Todo;
+use domain::todo::TodoByLifecycle;
+use domain::todo::TodoId;
+use domain::todo::Undeleted;
 use jiff::Timestamp;
 use uuid::Uuid;
 
@@ -18,17 +29,6 @@ use super::port::IdGenerator;
 use super::port::PortError;
 use super::port::UnitOfWork;
 use super::port::UnitOfWorkFactory;
-use crate::domain::assignee;
-use crate::domain::assignee::Assignee;
-use crate::domain::assignee::AssigneeByLifecycle;
-use crate::domain::assignee::AssigneeId;
-use crate::domain::todo::Active;
-use crate::domain::todo::Archived;
-use crate::domain::todo::Status;
-use crate::domain::todo::Todo;
-use crate::domain::todo::TodoByLifecycle;
-use crate::domain::todo::TodoId;
-use crate::domain::todo::Undeleted;
 
 pub(crate) type TestApp = App<MemoryStore, ManualClock, SequentialIds>;
 

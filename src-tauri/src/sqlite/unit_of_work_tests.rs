@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use domain::assignee::Assignee;
 use jiff::Timestamp;
 use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::sqlite::SqlitePoolOptions;
@@ -10,7 +11,6 @@ use crate::app::port::UnitOfWork;
 use crate::app::port::UnitOfWorkFactory;
 use crate::app::port::assignee::Query;
 use crate::app::port::assignee::Repository;
-use crate::domain::assignee::Assignee;
 use crate::sqlite::store::Store;
 use crate::sqlite::test_db;
 

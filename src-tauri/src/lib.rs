@@ -8,9 +8,7 @@
 
 pub mod app;
 mod cmd;
-mod domain;
 mod sqlite;
-mod text;
 
 use std::error::Error;
 use std::io;

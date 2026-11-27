@@ -1,5 +1,12 @@
 use std::iter;
 
+use domain::assignee::Assignee;
+use domain::todo::Active;
+use domain::todo::CompletedAt;
+use domain::todo::NotStarted;
+use domain::todo::StartedAt;
+use domain::todo::StatusKind;
+use domain::todo::Todo;
 use jiff::Timestamp;
 use uuid::Uuid;
 
@@ -16,13 +23,6 @@ use crate::app::testing;
 use crate::app::testing::TestApp;
 use crate::app::todo::view::TodoStatusView;
 use crate::app::todo::view::TodoView;
-use crate::domain::assignee::Assignee;
-use crate::domain::todo::Active;
-use crate::domain::todo::CompletedAt;
-use crate::domain::todo::NotStarted;
-use crate::domain::todo::StartedAt;
-use crate::domain::todo::StatusKind;
-use crate::domain::todo::Todo;
 
 fn at(second: i64) -> Timestamp {
     Timestamp::from_second(second).expect("valid time")

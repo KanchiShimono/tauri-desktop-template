@@ -1,3 +1,6 @@
+use domain::todo::Active;
+use domain::todo::NotStarted;
+use domain::todo::Todo;
 use jiff::Timestamp;
 use uuid::Uuid;
 
@@ -13,9 +16,6 @@ use crate::app::testing;
 use crate::app::testing::TestApp;
 use crate::app::todo::view::TodoStatusView;
 use crate::app::todo::view::TodoView;
-use crate::domain::todo::Active;
-use crate::domain::todo::NotStarted;
-use crate::domain::todo::Todo;
 
 fn new_todo() -> Todo<Active, NotStarted> {
     Todo::new(

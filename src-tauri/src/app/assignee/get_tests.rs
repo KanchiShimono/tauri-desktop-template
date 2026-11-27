@@ -1,3 +1,4 @@
+use domain::assignee::Assignee;
 use jiff::Timestamp;
 use uuid::Uuid;
 
@@ -8,7 +9,6 @@ use crate::app::error::ErrorInfo;
 use crate::app::port::PortError;
 use crate::app::port::assignee::Repository;
 use crate::app::testing;
-use crate::domain::assignee::Assignee;
 
 #[test]
 fn a_storage_failure_is_described_by_the_port() {

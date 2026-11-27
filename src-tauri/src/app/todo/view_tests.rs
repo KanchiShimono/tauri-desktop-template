@@ -1,3 +1,7 @@
+use domain::todo::Active;
+use domain::todo::NotStarted;
+use domain::todo::StatusKind;
+use domain::todo::Todo;
 use jiff::Timestamp;
 use uuid::Uuid;
 
@@ -7,10 +11,6 @@ use super::TodoStatusView;
 use super::TodoView;
 use crate::app::pagination::ListQuery;
 use crate::app::pagination::Page;
-use crate::domain::todo::Active;
-use crate::domain::todo::NotStarted;
-use crate::domain::todo::StatusKind;
-use crate::domain::todo::Todo;
 
 fn new_todo(id: u128) -> Todo<Active, NotStarted> {
     Todo::new(

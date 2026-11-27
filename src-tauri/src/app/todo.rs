@@ -9,6 +9,9 @@ mod list_archived;
 pub(crate) mod unarchive;
 pub(crate) mod view;
 
+use domain::todo::TodoDescriptionError;
+use domain::todo::TodoId;
+use domain::todo::TodoTitleError;
 use thiserror::Error;
 
 use super::assignee::AssigneeNotFound;
@@ -17,9 +20,6 @@ use super::error::ErrorInfo;
 use super::error::FieldViolation;
 use super::error::PublicReason;
 use super::error::Violations;
-use crate::domain::todo::TodoDescriptionError;
-use crate::domain::todo::TodoId;
-use crate::domain::todo::TodoTitleError;
 
 #[derive(Debug, Eq, PartialEq)]
 pub(crate) enum TodoFieldError {

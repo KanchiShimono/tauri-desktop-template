@@ -1,3 +1,4 @@
+use domain::todo::Todo;
 use jiff::Timestamp;
 use uuid::Uuid;
 
@@ -5,7 +6,6 @@ use crate::app::pagination::UnvalidatedListQuery;
 use crate::app::port::todo::Repository;
 use crate::app::testing;
 use crate::app::todo::view::TodoView;
-use crate::domain::todo::Todo;
 
 #[tokio::test]
 async fn the_requested_page_of_the_archived_todos_is_listed() {

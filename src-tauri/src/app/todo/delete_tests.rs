@@ -1,3 +1,4 @@
+use domain::todo::Todo;
 use jiff::Timestamp;
 use uuid::Uuid;
 
@@ -11,7 +12,6 @@ use crate::app::port::todo::Repository;
 use crate::app::testing;
 use crate::app::todo::view::TodoLifecycleView;
 use crate::app::todo::view::TodoView;
-use crate::domain::todo::Todo;
 
 #[test]
 fn a_storage_failure_is_described_by_the_port() {

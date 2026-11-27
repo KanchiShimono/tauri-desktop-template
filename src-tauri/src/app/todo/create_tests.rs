@@ -1,5 +1,6 @@
 use std::iter;
 
+use domain::assignee::Assignee;
 use jiff::Timestamp;
 use uuid::Uuid;
 
@@ -15,7 +16,6 @@ use crate::app::testing;
 use crate::app::todo::view::TodoLifecycleView;
 use crate::app::todo::view::TodoStatusView;
 use crate::app::todo::view::TodoView;
-use crate::domain::assignee::Assignee;
 
 fn input(title: &str, description: Option<&str>) -> UnvalidatedCreateTodoInput {
     UnvalidatedCreateTodoInput {

@@ -1,14 +1,15 @@
+use domain::assignee::AssigneeId;
+use domain::todo::Active;
+use domain::todo::Archived;
+use domain::todo::Status;
+use domain::todo::Todo;
+use domain::todo::TodoId;
+use domain::todo::Undeleted;
+
 use crate::app::pagination::ListQuery;
 use crate::app::pagination::Page;
 use crate::app::port::PortError;
 use crate::app::port::UnitOfWork;
-use crate::domain::assignee::AssigneeId;
-use crate::domain::todo::Active;
-use crate::domain::todo::Archived;
-use crate::domain::todo::Status;
-use crate::domain::todo::Todo;
-use crate::domain::todo::TodoId;
-use crate::domain::todo::Undeleted;
 
 pub(crate) trait Query: Send + Sync {
     fn find(&self, id: TodoId) -> impl Future<Output = Result<Option<Todo>, PortError>> + Send;

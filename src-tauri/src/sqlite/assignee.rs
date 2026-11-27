@@ -1,3 +1,9 @@
+use domain::assignee::Active;
+use domain::assignee::Assignee;
+use domain::assignee::AssigneeByLifecycle;
+use domain::assignee::AssigneeId;
+use domain::assignee::AssigneeNameError;
+use domain::assignee::Lifecycle;
 use sqlx::FromRow;
 use thiserror::Error;
 use uuid::Uuid;
@@ -12,12 +18,6 @@ use crate::app::pagination::Page;
 use crate::app::port::PortError;
 use crate::app::port::assignee::Query;
 use crate::app::port::assignee::Repository;
-use crate::domain::assignee::Active;
-use crate::domain::assignee::Assignee;
-use crate::domain::assignee::AssigneeByLifecycle;
-use crate::domain::assignee::AssigneeId;
-use crate::domain::assignee::AssigneeNameError;
-use crate::domain::assignee::Lifecycle;
 
 #[derive(FromRow)]
 struct AssigneeRow {

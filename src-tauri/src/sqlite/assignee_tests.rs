@@ -1,3 +1,5 @@
+use domain::assignee::Active;
+use domain::assignee::Assignee;
 use jiff::Timestamp;
 use uuid::Uuid;
 
@@ -9,8 +11,6 @@ use crate::app::port::UnitOfWork;
 use crate::app::port::UnitOfWorkFactory;
 use crate::app::port::assignee::Query;
 use crate::app::port::assignee::Repository;
-use crate::domain::assignee::Active;
-use crate::domain::assignee::Assignee;
 use crate::sqlite::store::Store;
 use crate::sqlite::test_db;
 

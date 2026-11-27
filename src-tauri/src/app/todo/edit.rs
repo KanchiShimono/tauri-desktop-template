@@ -1,3 +1,17 @@
+use domain::assignee::AssigneeId;
+use domain::todo::Active;
+use domain::todo::CompletedAt;
+use domain::todo::Done;
+use domain::todo::DueAt;
+use domain::todo::InProgress;
+use domain::todo::StartedAt;
+use domain::todo::Status;
+use domain::todo::Todo;
+use domain::todo::TodoByStatus;
+use domain::todo::TodoByUndeleted;
+use domain::todo::TodoDescription;
+use domain::todo::TodoId;
+use domain::todo::TodoTitle;
 use jiff::Timestamp;
 use thiserror::Error;
 use uuid::Uuid;
@@ -17,20 +31,6 @@ use crate::app::port::UnitOfWorkFactory;
 use crate::app::port::assignee;
 use crate::app::port::todo;
 use crate::app::presence::Presence;
-use crate::domain::assignee::AssigneeId;
-use crate::domain::todo::Active;
-use crate::domain::todo::CompletedAt;
-use crate::domain::todo::Done;
-use crate::domain::todo::DueAt;
-use crate::domain::todo::InProgress;
-use crate::domain::todo::StartedAt;
-use crate::domain::todo::Status;
-use crate::domain::todo::Todo;
-use crate::domain::todo::TodoByStatus;
-use crate::domain::todo::TodoByUndeleted;
-use crate::domain::todo::TodoDescription;
-use crate::domain::todo::TodoId;
-use crate::domain::todo::TodoTitle;
 
 #[derive(Clone, Debug)]
 pub(crate) struct UnvalidatedEditTodoInput {

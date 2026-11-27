@@ -1,5 +1,6 @@
+use domain::assignee::AssigneeNameError;
+
 use crate::app::error::ErrorInfo;
-use crate::domain::assignee::AssigneeNameError;
 
 #[test]
 fn name_errors_name_their_field_and_public_code() {

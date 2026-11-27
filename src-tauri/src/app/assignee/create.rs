@@ -1,3 +1,7 @@
+use domain::assignee::Assignee;
+use domain::assignee::AssigneeId;
+use domain::assignee::AssigneeName;
+use domain::assignee::AssigneeNameError;
 use jiff::Timestamp;
 use thiserror::Error;
 
@@ -10,10 +14,6 @@ use crate::app::port::IdGenerator;
 use crate::app::port::PortError;
 use crate::app::port::UnitOfWorkFactory;
 use crate::app::port::assignee::Repository;
-use crate::domain::assignee::Assignee;
-use crate::domain::assignee::AssigneeId;
-use crate::domain::assignee::AssigneeName;
-use crate::domain::assignee::AssigneeNameError;
 
 #[derive(Clone, Debug)]
 pub(crate) struct UnvalidatedCreateAssigneeInput {

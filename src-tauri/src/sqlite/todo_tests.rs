@@ -1,3 +1,10 @@
+use domain::assignee;
+use domain::assignee::Assignee;
+use domain::todo::Active;
+use domain::todo::NotStarted;
+use domain::todo::Status;
+use domain::todo::StatusState;
+use domain::todo::Todo;
 use jiff::Timestamp;
 use uuid::Uuid;
 
@@ -10,13 +17,6 @@ use crate::app::port::UnitOfWork;
 use crate::app::port::UnitOfWorkFactory;
 use crate::app::port::todo::Query;
 use crate::app::port::todo::Repository;
-use crate::domain::assignee;
-use crate::domain::assignee::Assignee;
-use crate::domain::todo::Active;
-use crate::domain::todo::NotStarted;
-use crate::domain::todo::Status;
-use crate::domain::todo::StatusState;
-use crate::domain::todo::Todo;
 use crate::sqlite::store::Store;
 use crate::sqlite::test_db;
 use crate::sqlite::timestamp::SqliteTimestamp;
