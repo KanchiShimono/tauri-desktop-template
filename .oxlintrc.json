@@ -22,6 +22,7 @@
   "ignorePatterns": [
     ".agents/**",
     ".claude/**",
+    "src/bindings.gen.ts",
     "src/components/ui/**",
     "src/hooks/use-highlighted-code.ts",
     "src/hooks/use-mobile.ts",
