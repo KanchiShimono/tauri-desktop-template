@@ -62,6 +62,13 @@ checksum = "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
 [[package]]
 name = "app"
 version = "0.0.1"
+dependencies = [
+ "domain",
+ "jiff 1.0.1",
+ "thiserror 2.0.21",
+ "tokio",
+ "uuid",
+]
 
 [[package]]
 name = "async-broadcast"
