@@ -10,7 +10,7 @@ use domain::assignee;
 use domain::assignee::Assignee;
 use domain::assignee::AssigneeByLifecycle;
 use domain::assignee::AssigneeId;
-use domain::todo::Active;
+use domain::todo;
 use domain::todo::Archived;
 use domain::todo::Status;
 use domain::todo::Todo;
@@ -174,7 +174,7 @@ impl port::todo::Query for MemoryStore {
         Ok(self.snapshot().todos.remove(&id))
     }
 
-    async fn list_active(&self) -> Result<Vec<Todo<Active, Status>>, PortError> {
+    async fn list_active(&self) -> Result<Vec<Todo<todo::Active, Status>>, PortError> {
         let rows = self.snapshot().todos.into_values();
         Ok(rows
             .filter_map(|todo| match TodoByLifecycle::from(todo) {

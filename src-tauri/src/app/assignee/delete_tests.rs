@@ -1,6 +1,6 @@
 use domain::assignee;
 use domain::assignee::Assignee;
-use domain::todo::Active;
+use domain::todo;
 use domain::todo::NotStarted;
 use domain::todo::Todo;
 use jiff::Timestamp;
@@ -25,7 +25,7 @@ fn new_assignee(id: u128) -> Assignee<assignee::Active> {
     )
 }
 
-fn new_todo(id: u128) -> Todo<Active, NotStarted> {
+fn new_todo(id: u128) -> Todo<todo::Active, NotStarted> {
     Todo::new(
         Uuid::from_u128(id).into(),
         "Review design".parse().expect("valid title"),
