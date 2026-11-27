@@ -1,7 +1,7 @@
 mod assignee;
 mod error;
 mod pagination;
-mod store;
+pub mod store;
 #[cfg(test)]
 pub(crate) mod test_db;
 mod timestamp;

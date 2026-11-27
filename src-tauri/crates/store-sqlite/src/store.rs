@@ -2,6 +2,7 @@ use std::io;
 use std::path::Path;
 
 use sqlx::SqlitePool;
+use sqlx::migrate;
 use sqlx::migrate::MigrateError;
 use sqlx::migrate::Migrator;
 use sqlx::sqlite::SqliteConnectOptions;
@@ -10,13 +11,13 @@ use sqlx::sqlite::SqlitePoolOptions;
 use thiserror::Error;
 use tokio::fs;
 
-pub(super) static MIGRATOR: Migrator = sqlx::migrate!();
+pub(crate) static MIGRATOR: Migrator = migrate!();
 
 #[derive(Clone, Debug)]
-pub(crate) struct Store(SqlitePool);
+pub struct Store(SqlitePool);
 
 #[derive(Debug, Error)]
-pub(crate) enum OpenError {
+pub enum OpenError {
     #[error("failed to create the database directory")]
     CreateDir(#[source] io::Error),
     #[error("failed to open the database")]
@@ -26,11 +27,11 @@ pub(crate) enum OpenError {
 }
 
 impl Store {
-    pub const fn new(pool: SqlitePool) -> Self {
+    pub(crate) const fn new(pool: SqlitePool) -> Self {
         Self(pool)
     }
 
-    pub(crate) async fn open(path: &Path) -> Result<Self, OpenError> {
+    pub async fn open(path: &Path) -> Result<Self, OpenError> {
         if let Some(dir) = path.parent() {
             fs::create_dir_all(dir)
                 .await

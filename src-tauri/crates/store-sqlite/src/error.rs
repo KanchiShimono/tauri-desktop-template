@@ -5,7 +5,7 @@ use sqlx::error::DatabaseError;
 const SQLITE_BUSY: i32 = 5;
 const PRIMARY_RESULT_CODE_MASK: i32 = 0xff;
 
-pub(super) fn into_port_error(source: Error) -> PortError {
+pub(crate) fn into_port_error(source: Error) -> PortError {
     let primary_code = source
         .as_database_error()
         .and_then(DatabaseError::code)

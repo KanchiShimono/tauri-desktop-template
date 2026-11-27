@@ -9,10 +9,10 @@ use domain::assignee::Assignee;
 use jiff::Timestamp;
 use uuid::Uuid;
 
-use super::AssigneeRow;
-use super::AssigneeRowError;
-use crate::sqlite::store::Store;
-use crate::sqlite::test_db;
+use crate::assignee::AssigneeRow;
+use crate::assignee::AssigneeRowError;
+use crate::store::Store;
+use crate::test_db;
 
 fn at(second: i64) -> Timestamp {
     Timestamp::from_second(second).expect("valid timestamp")

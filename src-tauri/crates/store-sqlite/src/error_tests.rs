@@ -1,7 +1,7 @@
 use app::port::PortError;
 
-use crate::sqlite::error;
-use crate::sqlite::test_db;
+use crate::error;
+use crate::test_db;
 
 #[sqlx::test]
 async fn a_database_error_other_than_busy_is_a_backend_failure() {

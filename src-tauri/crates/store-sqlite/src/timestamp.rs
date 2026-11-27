@@ -12,7 +12,7 @@ use sqlx::sqlite::SqliteTypeInfo;
 use sqlx::sqlite::SqliteValueRef;
 
 #[derive(Clone, Copy, Debug, Eq, From, Into, PartialEq)]
-pub(super) struct SqliteTimestamp(Timestamp);
+pub(crate) struct SqliteTimestamp(Timestamp);
 
 impl Type<Sqlite> for SqliteTimestamp {
     fn type_info() -> SqliteTypeInfo {

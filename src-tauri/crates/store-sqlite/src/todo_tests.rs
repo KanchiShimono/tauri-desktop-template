@@ -15,11 +15,11 @@ use domain::todo::Todo;
 use jiff::Timestamp;
 use uuid::Uuid;
 
-use super::TodoRow;
-use super::TodoRowError;
-use crate::sqlite::store::Store;
-use crate::sqlite::test_db;
-use crate::sqlite::timestamp::SqliteTimestamp;
+use crate::store::Store;
+use crate::test_db;
+use crate::timestamp::SqliteTimestamp;
+use crate::todo::TodoRow;
+use crate::todo::TodoRowError;
 
 fn at(second: i64) -> Timestamp {
     Timestamp::new(second, 123_456_789).expect("valid timestamp")
