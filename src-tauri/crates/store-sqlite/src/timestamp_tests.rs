@@ -1,8 +1,8 @@
 use jiff::Timestamp;
 use sqlx::Error;
 
-use super::SqliteTimestamp;
-use crate::sqlite::test_db;
+use crate::test_db;
+use crate::timestamp::SqliteTimestamp;
 
 #[sqlx::test]
 async fn nanoseconds_around_the_epoch_match_the_persisted_format() {

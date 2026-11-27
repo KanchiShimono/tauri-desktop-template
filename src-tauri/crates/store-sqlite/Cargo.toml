@@ -1,0 +1,28 @@
+[package]
+name = "store-sqlite"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[features]
+test-support = []
+
+[dependencies]
+app.workspace = true
+domain.workspace = true
+jiff.workspace = true
+macros.workspace = true
+sqlx = { workspace = true, default-features = false, features = [
+  "macros",
+  "migrate",
+  "runtime-tokio",
+  "sqlite",
+  "uuid",
+] }
+thiserror.workspace = true
+tokio = { workspace = true, features = ["fs"] }
+uuid.workspace = true
+
+[lints]
+workspace = true

@@ -11,8 +11,8 @@ use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::sqlite::SqlitePoolOptions;
 use uuid::Uuid;
 
-use crate::sqlite::store::Store;
-use crate::sqlite::test_db;
+use crate::store::Store;
+use crate::test_db;
 
 #[sqlx::test]
 async fn a_unit_of_work_holds_the_write_lock_from_its_start(

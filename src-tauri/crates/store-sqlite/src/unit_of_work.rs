@@ -5,11 +5,11 @@ use sqlx::Sqlite;
 use sqlx::SqliteConnection;
 use sqlx::Transaction;
 
-use crate::sqlite::error;
-use crate::sqlite::store::Store;
+use crate::error;
+use crate::store::Store;
 
 #[derive(Debug)]
-pub(crate) struct UnitOfWork(Transaction<'static, Sqlite>);
+pub struct UnitOfWork(Transaction<'static, Sqlite>);
 
 impl UnitOfWork {
     const fn new(transaction: Transaction<'static, Sqlite>) -> Self {

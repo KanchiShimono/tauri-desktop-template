@@ -1,39 +1,14 @@
 use jiff::Timestamp;
-use sqlx::Connection;
 use sqlx::Error;
-use sqlx::SqliteConnection;
-use sqlx::sqlite::SqlitePoolOptions;
 use uuid::Uuid;
 
-use super::store::MIGRATOR;
-use super::store::Store;
-use super::timestamp::SqliteTimestamp;
-
-pub(super) async fn open() -> SqliteConnection {
-    SqliteConnection::connect("sqlite::memory:")
-        .await
-        .expect("open in-memory SQLite database")
-}
-
-pub(super) async fn migrated() -> SqliteConnection {
-    let mut db = open().await;
-    MIGRATOR.run(&mut db).await.expect("apply migrations");
-    db
-}
-
-pub(crate) async fn store() -> Store {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
-        .await
-        .expect("open in-memory SQLite pool");
-    MIGRATOR.run(&pool).await.expect("apply migrations");
-    Store::new(pool)
-}
+use crate::store::MIGRATOR;
+use crate::test_db;
+use crate::timestamp::SqliteTimestamp;
 
 #[sqlx::test]
 async fn migration_enforces_timestamp_storage_and_is_reversible() {
-    let mut db = migrated().await;
+    let mut db = test_db::migrated().await;
     let epoch = SqliteTimestamp::from(Timestamp::UNIX_EPOCH);
     let assignee = Uuid::nil().hyphenated();
     sqlx::query("INSERT INTO assignees (id, name, created_at) VALUES (?, 'Ada', ?)")

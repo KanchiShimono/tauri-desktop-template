@@ -1,8 +1,8 @@
 use app::pagination::ListQuery;
 
-pub(super) struct LimitOffset {
-    pub(super) limit: i64,
-    pub(super) offset: i64,
+pub(crate) struct LimitOffset {
+    pub(crate) limit: i64,
+    pub(crate) offset: i64,
 }
 
 impl From<ListQuery> for LimitOffset {

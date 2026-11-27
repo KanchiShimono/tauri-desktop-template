@@ -7,6 +7,7 @@ use app::id::UuidV7Generator;
 use serde_json::Value;
 use serde_json::json;
 use specta_typescript::Typescript;
+use store_sqlite::test_db;
 use tauri::Manager;
 use tauri::WebviewWindow;
 use tauri::WebviewWindowBuilder;
@@ -20,7 +21,6 @@ use tauri::test::MockRuntime;
 use tauri::webview::InvokeRequest;
 
 use crate::App;
-use crate::sqlite::test_db;
 
 const BINDINGS: &str = "../src/bindings.gen.ts";
 

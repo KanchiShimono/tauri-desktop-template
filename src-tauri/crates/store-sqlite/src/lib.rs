@@ -1,11 +1,9 @@
 mod assignee;
 mod error;
 mod pagination;
-mod store;
-#[cfg(test)]
-pub(crate) mod test_db;
+pub mod store;
+#[cfg(any(test, feature = "test-support"))]
+pub mod test_db;
 mod timestamp;
 mod todo;
 mod unit_of_work;
-
-pub(crate) use self::store::Store;
