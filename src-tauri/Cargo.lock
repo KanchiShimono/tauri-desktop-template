@@ -943,6 +943,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "domain"
+version = "0.0.1"
+
+[[package]]
 name = "dotenvy"
 version = "0.15.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2187,6 +2191,7 @@ dependencies = [
 name = "kanban"
 version = "0.0.1"
 dependencies = [
+ "domain",
  "jiff 1.0.1",
  "macros",
  "serde",
