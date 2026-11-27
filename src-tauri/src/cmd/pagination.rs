@@ -1,9 +1,8 @@
 use std::num::TryFromIntError;
 
+use app::error::AppError;
+use app::error::ErrorInfo;
 use thiserror::Error;
-
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
 
 #[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 #[error("next page offset exceeds the wire format")]

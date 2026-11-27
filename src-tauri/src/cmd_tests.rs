@@ -2,6 +2,8 @@ use std::env;
 use std::fs;
 use std::process;
 
+use app::clock::SystemClock;
+use app::id::UuidV7Generator;
 use serde_json::Value;
 use serde_json::json;
 use specta_typescript::Typescript;
@@ -18,8 +20,6 @@ use tauri::test::MockRuntime;
 use tauri::webview::InvokeRequest;
 
 use crate::App;
-use crate::app::SystemClock;
-use crate::app::UuidV7Generator;
 use crate::sqlite::test_db;
 
 const BINDINGS: &str = "../src/bindings.gen.ts";

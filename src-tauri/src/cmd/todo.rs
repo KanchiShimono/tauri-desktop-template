@@ -1,3 +1,17 @@
+use app::pagination::Page;
+use app::pagination::UnvalidatedListQuery;
+use app::presence::Presence;
+use app::todo::archive::UnvalidatedArchiveTodoInput;
+use app::todo::change_status::TodoStatusInput;
+use app::todo::change_status::UnvalidatedChangeTodoStatusInput;
+use app::todo::create::UnvalidatedCreateTodoInput;
+use app::todo::delete::UnvalidatedDeleteTodoInput;
+use app::todo::edit::UnvalidatedEditTodoInput;
+use app::todo::unarchive::UnvalidatedUnarchiveTodoInput;
+use app::todo::view::PreviousTodoLifecycleView;
+use app::todo::view::TodoLifecycleView;
+use app::todo::view::TodoStatusView;
+use app::todo::view::TodoView;
 use serde::Deserialize;
 use serde::Serialize;
 use specta::Type;
@@ -10,20 +24,6 @@ use super::omissible::Omissible;
 use super::pagination::NextOffsetOutOfRange;
 use super::timestamp::Timestamp;
 use crate::App;
-use crate::app::Page;
-use crate::app::PreviousTodoLifecycleView;
-use crate::app::TodoLifecycleView;
-use crate::app::TodoStatusView;
-use crate::app::TodoView;
-use crate::app::pagination::UnvalidatedListQuery;
-use crate::app::presence::Presence;
-use crate::app::todo::archive::UnvalidatedArchiveTodoInput;
-use crate::app::todo::change_status::TodoStatusInput;
-use crate::app::todo::change_status::UnvalidatedChangeTodoStatusInput;
-use crate::app::todo::create::UnvalidatedCreateTodoInput;
-use crate::app::todo::delete::UnvalidatedDeleteTodoInput;
-use crate::app::todo::edit::UnvalidatedEditTodoInput;
-use crate::app::todo::unarchive::UnvalidatedUnarchiveTodoInput;
 
 #[derive(Debug, Serialize, Type)]
 pub(crate) struct Todo {

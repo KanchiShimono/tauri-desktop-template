@@ -1,4 +1,4 @@
-use crate::app::pagination::ListQuery;
+use app::pagination::ListQuery;
 
 pub(super) struct LimitOffset {
     pub(super) limit: i64,

@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/domain","crates/macros"]
+members = ["crates/app", "crates/domain", "crates/macros"]
 
 [workspace.package]
 version = "0.0.1"
@@ -8,6 +8,7 @@ edition = "2024"
 publish = false
 
 [workspace.dependencies]
+app = { path = "crates/app" }
 domain = { path = "crates/domain" }
 macros = { path = "crates/macros" }
 
@@ -85,6 +86,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
+app.workspace = true
 domain.workspace = true
 jiff = { workspace = true, features = ["serde"] }
 macros.workspace = true

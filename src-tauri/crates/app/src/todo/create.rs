@@ -1,0 +1,146 @@
+use domain::assignee::AssigneeId;
+use domain::todo::DueAt;
+use domain::todo::Todo;
+use domain::todo::TodoDescription;
+use domain::todo::TodoId;
+use domain::todo::TodoTitle;
+use jiff::Timestamp;
+use thiserror::Error;
+use uuid::Uuid;
+
+use crate::app::App;
+use crate::assignee::AssigneeNotFound;
+use crate::error::AppError;
+use crate::error::ErrorInfo;
+use crate::error::Violations;
+use crate::port::Clock;
+use crate::port::IdGenerator;
+use crate::port::PortError;
+use crate::port::UnitOfWorkFactory;
+use crate::port::assignee;
+use crate::port::todo;
+use crate::todo::TodoFieldError;
+use crate::todo::view::TodoView;
+
+#[derive(Clone, Debug)]
+pub struct UnvalidatedCreateTodoInput {
+    pub title: String,
+    pub description: Option<String>,
+    pub assignee_id: Option<Uuid>,
+    pub due_at: Option<Timestamp>,
+}
+
+#[derive(Debug)]
+struct CreateTodoCommand {
+    title: TodoTitle,
+    description: Option<TodoDescription>,
+    assignee_id: Option<AssigneeId>,
+    due_at: Option<DueAt>,
+}
+
+#[derive(Debug, Error)]
+pub enum CreateTodoError {
+    #[error("The input is invalid.")]
+    InvalidInput(Violations<TodoFieldError>),
+    #[error(transparent)]
+    AssigneeNotFound(#[from] AssigneeNotFound),
+    #[error(transparent)]
+    Port(#[from] PortError),
+}
+
+impl AppError for CreateTodoError {
+    fn describe(&self) -> ErrorInfo {
+        use crate::todo;
+
+        match self {
+            Self::InvalidInput(violations) => {
+                ErrorInfo::InvalidInput(violations.map_ref(TodoFieldError::describe))
+            }
+            Self::AssigneeNotFound(error) => todo::describe_unknown_assignee(error),
+            Self::Port(error) => error.describe(),
+        }
+    }
+}
+
+impl TryFrom<UnvalidatedCreateTodoInput> for CreateTodoCommand {
+    type Error = CreateTodoError;
+
+    fn try_from(input: UnvalidatedCreateTodoInput) -> Result<Self, Self::Error> {
+        let title = input.title.parse().map_err(TodoFieldError::Title);
+        let description = TodoDescription::try_from_optional(input.description.as_deref())
+            .map_err(TodoFieldError::Description);
+
+        let violations = match (title, description) {
+            (Ok(title), Ok(description)) => {
+                return Ok(Self {
+                    title,
+                    description,
+                    assignee_id: input.assignee_id.map(AssigneeId::from),
+                    due_at: input.due_at.map(DueAt::from),
+                });
+            }
+            (Err(first), Err(second)) => Violations {
+                first,
+                rest: vec![second],
+            },
+            (Err(field), Ok(_)) | (Ok(_), Err(field)) => Violations::one(field),
+        };
+        Err(CreateTodoError::InvalidInput(violations))
+    }
+}
+
+impl<S, C, I> App<S, C, I>
+where
+    S: UnitOfWorkFactory,
+    S::UnitOfWork: assignee::Repository + todo::Repository,
+    C: Clock,
+    I: IdGenerator<TodoId>,
+{
+    pub async fn create_todo(
+        &self,
+        input: UnvalidatedCreateTodoInput,
+    ) -> Result<TodoView, CreateTodoError> {
+        let command = CreateTodoCommand::try_from(input)?;
+        let id = self.id_generator.generate();
+        let now = self.clock.now();
+
+        let todo = self
+            .transact(async |uow| create(uow, command, id, now).await)
+            .await?;
+        Ok(TodoView::from(&todo))
+    }
+}
+
+async fn create<U>(
+    uow: &mut U,
+    command: CreateTodoCommand,
+    id: TodoId,
+    now: Timestamp,
+) -> Result<Todo, CreateTodoError>
+where
+    U: assignee::Repository + todo::Repository,
+{
+    let todo = Todo::new(
+        id,
+        command.title,
+        command.description,
+        None,
+        command.due_at,
+        now,
+    );
+    let todo = match command.assignee_id {
+        None => todo,
+        Some(assignee_id) => {
+            let assignee = uow
+                .load_active(assignee_id)
+                .await?
+                .ok_or(AssigneeNotFound(assignee_id))?;
+            todo.reassign(&assignee)
+        }
+    };
+    Ok(todo::Repository::save(uow, &todo.into_any()).await?)
+}
+
+#[cfg(test)]
+#[path = "create_tests.rs"]
+mod tests;

@@ -1,3 +1,11 @@
+use app::assignee::create::UnvalidatedCreateAssigneeInput;
+use app::assignee::delete;
+use app::assignee::delete::UnvalidatedDeleteAssigneeInput;
+use app::assignee::rename::UnvalidatedRenameAssigneeInput;
+use app::assignee::view::AssigneeLifecycleView;
+use app::assignee::view::AssigneeView;
+use app::pagination::Page;
+use app::pagination::UnvalidatedListQuery;
 use serde::Deserialize;
 use serde::Serialize;
 use specta::Type;
@@ -9,14 +17,6 @@ use super::error::CommandError;
 use super::pagination::NextOffsetOutOfRange;
 use super::timestamp::Timestamp;
 use crate::App;
-use crate::app::AssigneeLifecycleView;
-use crate::app::AssigneeView;
-use crate::app::Page;
-use crate::app::assignee::create::UnvalidatedCreateAssigneeInput;
-use crate::app::assignee::delete;
-use crate::app::assignee::delete::UnvalidatedDeleteAssigneeInput;
-use crate::app::assignee::rename::UnvalidatedRenameAssigneeInput;
-use crate::app::pagination::UnvalidatedListQuery;
 
 #[derive(Debug, Serialize, Type)]
 pub(crate) struct Assignee {

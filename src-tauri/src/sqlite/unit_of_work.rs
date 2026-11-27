@@ -1,10 +1,11 @@
+use app::port;
+use app::port::PortError;
+use app::port::UnitOfWorkFactory;
 use sqlx::Sqlite;
 use sqlx::SqliteConnection;
 use sqlx::Transaction;
 
-use crate::app::port;
-use crate::app::port::PortError;
-use crate::app::port::UnitOfWorkFactory;
+use crate::sqlite::error;
 use crate::sqlite::store::Store;
 
 #[derive(Debug)]
@@ -22,11 +23,11 @@ impl UnitOfWork {
 
 impl port::UnitOfWork for UnitOfWork {
     async fn commit(self) -> Result<(), PortError> {
-        self.0.commit().await.map_err(Into::into)
+        self.0.commit().await.map_err(error::into_port_error)
     }
 
     async fn rollback(self) -> Result<(), PortError> {
-        self.0.rollback().await.map_err(Into::into)
+        self.0.rollback().await.map_err(error::into_port_error)
     }
 }
 
@@ -38,7 +39,7 @@ impl UnitOfWorkFactory for Store {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map(UnitOfWork::new)
-            .map_err(Into::into)
+            .map_err(error::into_port_error)
     }
 }
 

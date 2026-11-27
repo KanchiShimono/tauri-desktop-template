@@ -1,12 +1,11 @@
 use std::error::Error;
 use std::iter;
 
+use app::error::AppError;
+use app::error::ErrorInfo;
+use app::error::FieldViolation;
 use serde::Serialize;
 use specta::Type;
-
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
-use crate::app::error::FieldViolation;
 
 #[derive(Debug, Eq, PartialEq, Serialize, Type)]
 #[serde(tag = "kind", rename_all = "snake_case")]

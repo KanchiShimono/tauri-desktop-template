@@ -1,6 +1,7 @@
+use app::error::AppError;
+use app::error::ErrorInfo;
+
 use super::NextOffsetOutOfRange;
-use crate::app::error::AppError;
-use crate::app::error::ErrorInfo;
 
 #[test]
 fn a_next_offset_beyond_the_wire_format_is_an_internal_error() {
