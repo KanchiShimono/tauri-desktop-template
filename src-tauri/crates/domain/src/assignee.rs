@@ -6,18 +6,19 @@ use thiserror::Error;
 use uuid::Uuid;
 
 use self::sealed::Sealed;
+use crate::text;
 use crate::text::NonEmptyText;
 use crate::text::NonEmptyTextError;
 
 mod sealed {
-    pub(crate) trait Sealed {}
+    pub trait Sealed {}
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Id, Ord, PartialEq, PartialOrd)]
-pub(crate) struct AssigneeId(Uuid);
+pub struct AssigneeId(Uuid);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct AssigneeName(NonEmptyText);
+pub struct AssigneeName(NonEmptyText);
 
 impl AssigneeName {
     const MAX_CHARS: usize = 50;
@@ -40,7 +41,7 @@ impl FromStr for AssigneeName {
         }
 
         let name = trimmed.parse::<NonEmptyText>()?;
-        if let Some(ch) = super::first_line_break_or_control_character(name.as_ref()) {
+        if let Some(ch) = text::first_line_break_or_control_character(name.as_ref()) {
             return Err(AssigneeNameError::LineBreakOrControlCharacter(ch));
         }
 
@@ -49,7 +50,7 @@ impl FromStr for AssigneeName {
 }
 
 #[derive(Clone, Debug, Eq, Error, PartialEq)]
-pub(crate) enum AssigneeNameError {
+pub enum AssigneeNameError {
     #[error("Name must contain a non-whitespace character.")]
     Blank,
     #[error("Name contains a line break or control character ({0:?}).")]
@@ -68,21 +69,21 @@ impl From<NonEmptyTextError> for AssigneeNameError {
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-pub(crate) struct Active;
+pub struct Active;
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-pub(crate) struct Deleted {
+pub struct Deleted {
     deleted_at: Timestamp,
 }
 
 impl Deleted {
-    pub(crate) fn deleted_at(&self) -> Timestamp {
+    pub fn deleted_at(&self) -> Timestamp {
         self.deleted_at
     }
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-pub(crate) enum Lifecycle {
+pub enum Lifecycle {
     Active(Active),
     Deleted(Deleted),
 }
@@ -99,7 +100,7 @@ impl From<Deleted> for Lifecycle {
     }
 }
 
-pub(crate) trait LifecycleState: Copy + Into<Lifecycle> + Sealed {}
+pub trait LifecycleState: Copy + Into<Lifecycle> + Sealed {}
 
 impl Sealed for Active {}
 impl Sealed for Deleted {}
@@ -110,7 +111,7 @@ impl LifecycleState for Deleted {}
 impl LifecycleState for Lifecycle {}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct Assignee<L: LifecycleState = Lifecycle> {
+pub struct Assignee<L: LifecycleState = Lifecycle> {
     id: AssigneeId,
     name: AssigneeName,
     created_at: Timestamp,
@@ -118,24 +119,24 @@ pub(crate) struct Assignee<L: LifecycleState = Lifecycle> {
 }
 
 impl<L: LifecycleState> Assignee<L> {
-    pub(crate) fn id(&self) -> AssigneeId {
+    pub fn id(&self) -> AssigneeId {
         self.id
     }
 
-    pub(crate) fn name(&self) -> &AssigneeName {
+    pub fn name(&self) -> &AssigneeName {
         &self.name
     }
 
-    pub(crate) fn created_at(&self) -> Timestamp {
+    pub fn created_at(&self) -> Timestamp {
         self.created_at
     }
 
-    pub(crate) fn lifecycle(&self) -> L {
+    pub fn lifecycle(&self) -> L {
         self.lifecycle
     }
 
     #[must_use]
-    pub(crate) fn into_any(self) -> Assignee {
+    pub fn into_any(self) -> Assignee {
         self.map_lifecycle(Into::into)
     }
 
@@ -150,7 +151,7 @@ impl<L: LifecycleState> Assignee<L> {
 }
 
 impl Assignee<Active> {
-    pub(crate) fn new(id: AssigneeId, name: AssigneeName, created_at: Timestamp) -> Self {
+    pub fn new(id: AssigneeId, name: AssigneeName, created_at: Timestamp) -> Self {
         Self {
             id,
             name,
@@ -160,12 +161,12 @@ impl Assignee<Active> {
     }
 
     #[must_use]
-    pub(crate) fn rename(self, name: AssigneeName) -> Self {
+    pub fn rename(self, name: AssigneeName) -> Self {
         Self { name, ..self }
     }
 
     #[must_use]
-    pub(crate) fn delete(self, deleted_at: Timestamp) -> Assignee<Deleted> {
+    pub fn delete(self, deleted_at: Timestamp) -> Assignee<Deleted> {
         self.map_lifecycle(|Active| Deleted { deleted_at })
     }
 }
@@ -176,13 +177,13 @@ impl Assignee<Deleted> {
         expect(dead_code, reason = "No use case restores deleted items yet.")
     )]
     #[must_use]
-    pub(crate) fn restore(self) -> Assignee<Active> {
+    fn restore(self) -> Assignee<Active> {
         self.map_lifecycle(|Deleted { .. }| Active)
     }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum AssigneeByLifecycle {
+pub enum AssigneeByLifecycle {
     Active(Assignee<Active>),
     Deleted(Assignee<Deleted>),
 }

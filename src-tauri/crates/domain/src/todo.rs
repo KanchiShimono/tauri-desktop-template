@@ -10,23 +10,24 @@ use uuid::Uuid;
 use self::sealed::SealedLifecycle;
 use self::sealed::SealedStatus;
 use self::sealed::SealedUndeleted;
-use crate::domain::assignee;
-use crate::domain::assignee::Assignee;
-use crate::domain::assignee::AssigneeId;
+use crate::assignee;
+use crate::assignee::Assignee;
+use crate::assignee::AssigneeId;
+use crate::text;
 use crate::text::NonEmptyText;
 use crate::text::NonEmptyTextError;
 
 mod sealed {
-    pub(crate) trait SealedLifecycle {}
-    pub(crate) trait SealedStatus {}
-    pub(crate) trait SealedUndeleted {}
+    pub trait SealedLifecycle {}
+    pub trait SealedStatus {}
+    pub trait SealedUndeleted {}
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Id, Ord, PartialEq, PartialOrd)]
-pub(crate) struct TodoId(Uuid);
+pub struct TodoId(Uuid);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct TodoTitle(NonEmptyText);
+pub struct TodoTitle(NonEmptyText);
 
 impl TodoTitle {
     const MAX_CHARS: usize = 100;
@@ -49,7 +50,7 @@ impl FromStr for TodoTitle {
         }
 
         let title = trimmed.parse::<NonEmptyText>()?;
-        if let Some(ch) = super::first_line_break_or_control_character(title.as_ref()) {
+        if let Some(ch) = text::first_line_break_or_control_character(title.as_ref()) {
             return Err(TodoTitleError::LineBreakOrControlCharacter(ch));
         }
 
@@ -58,7 +59,7 @@ impl FromStr for TodoTitle {
 }
 
 #[derive(Clone, Debug, Eq, Error, PartialEq)]
-pub(crate) enum TodoTitleError {
+pub enum TodoTitleError {
     #[error("Title must contain a non-whitespace character.")]
     Blank,
     #[error("Title contains a line break or control character ({0:?}).")]
@@ -77,14 +78,12 @@ impl From<NonEmptyTextError> for TodoTitleError {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct TodoDescription(NonEmptyText);
+pub struct TodoDescription(NonEmptyText);
 
 impl TodoDescription {
     const MAX_CHARS: usize = 2_000;
 
-    pub(crate) fn try_from_optional(
-        value: Option<&str>,
-    ) -> Result<Option<Self>, TodoDescriptionError> {
+    pub fn try_from_optional(value: Option<&str>) -> Result<Option<Self>, TodoDescriptionError> {
         let Some(value) = value else {
             return Ok(None);
         };
@@ -130,7 +129,7 @@ impl FromStr for TodoDescription {
 }
 
 #[derive(Clone, Debug, Eq, Error, PartialEq)]
-pub(crate) enum TodoDescriptionError {
+pub enum TodoDescriptionError {
     #[error("Description must contain a non-whitespace character.")]
     Blank,
     #[error("Description may only contain tabs and line breaks as control characters.")]
@@ -149,30 +148,30 @@ impl From<NonEmptyTextError> for TodoDescriptionError {
 }
 
 #[derive(Clone, Copy, Debug, Eq, From, Hash, Into, Ord, PartialEq, PartialOrd)]
-pub(crate) struct StartedAt(Timestamp);
+pub struct StartedAt(Timestamp);
 
 #[derive(Clone, Copy, Debug, Eq, From, Hash, Into, Ord, PartialEq, PartialOrd)]
-pub(crate) struct CompletedAt(Timestamp);
+pub struct CompletedAt(Timestamp);
 
 #[derive(Clone, Copy, Debug, Eq, From, Hash, Into, Ord, PartialEq, PartialOrd)]
-pub(crate) struct DueAt(Timestamp);
+pub struct DueAt(Timestamp);
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-pub(crate) struct Active;
+pub struct Active;
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-pub(crate) struct Archived {
+pub struct Archived {
     archived_at: Timestamp,
 }
 
 impl Archived {
-    pub(crate) fn archived_at(&self) -> Timestamp {
+    pub fn archived_at(&self) -> Timestamp {
         self.archived_at
     }
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-pub(crate) enum Undeleted {
+pub enum Undeleted {
     Active(Active),
     Archived(Archived),
 }
@@ -190,23 +189,23 @@ impl From<Archived> for Undeleted {
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-pub(crate) struct Deleted<P: UndeletedState = Undeleted> {
+pub struct Deleted<P: UndeletedState = Undeleted> {
     previous: P,
     deleted_at: Timestamp,
 }
 
 impl<P: UndeletedState> Deleted<P> {
-    pub(crate) fn previous(&self) -> P {
+    pub fn previous(&self) -> P {
         self.previous
     }
 
-    pub(crate) fn deleted_at(&self) -> Timestamp {
+    pub fn deleted_at(&self) -> Timestamp {
         self.deleted_at
     }
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-pub(crate) enum Lifecycle {
+pub enum Lifecycle {
     Active(Active),
     Archived(Archived),
     Deleted(Deleted),
@@ -242,9 +241,9 @@ impl<P: UndeletedState> From<Deleted<P>> for Lifecycle {
     }
 }
 
-pub(crate) trait LifecycleState: Copy + Into<Lifecycle> + SealedLifecycle {}
+pub trait LifecycleState: Copy + Into<Lifecycle> + SealedLifecycle {}
 
-pub(crate) trait UndeletedState: LifecycleState + Into<Undeleted> + SealedUndeleted {}
+pub trait UndeletedState: LifecycleState + Into<Undeleted> + SealedUndeleted {}
 
 impl SealedLifecycle for Active {}
 impl SealedLifecycle for Archived {}
@@ -267,44 +266,44 @@ impl UndeletedState for Archived {}
 impl UndeletedState for Undeleted {}
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-pub(crate) struct NotStarted;
+pub struct NotStarted;
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-pub(crate) struct InProgress {
+pub struct InProgress {
     started_at: StartedAt,
 }
 
 impl InProgress {
-    pub(crate) fn started_at(&self) -> StartedAt {
+    pub fn started_at(&self) -> StartedAt {
         self.started_at
     }
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-pub(crate) struct Done {
+pub struct Done {
     started_at: StartedAt,
     completed_at: CompletedAt,
 }
 
 impl Done {
-    pub(crate) fn started_at(&self) -> StartedAt {
+    pub fn started_at(&self) -> StartedAt {
         self.started_at
     }
 
-    pub(crate) fn completed_at(&self) -> CompletedAt {
+    pub fn completed_at(&self) -> CompletedAt {
         self.completed_at
     }
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-pub(crate) enum Status {
+pub enum Status {
     NotStarted(NotStarted),
     InProgress(InProgress),
     Done(Done),
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-pub(crate) enum StatusKind {
+pub enum StatusKind {
     NotStarted,
     InProgress,
     Done,
@@ -338,7 +337,7 @@ impl From<Done> for Status {
     }
 }
 
-pub(crate) trait StatusState: Copy + Into<Status> + SealedStatus {}
+pub trait StatusState: Copy + Into<Status> + SealedStatus {}
 
 impl SealedStatus for NotStarted {}
 impl SealedStatus for InProgress {}
@@ -351,7 +350,7 @@ impl StatusState for Done {}
 impl StatusState for Status {}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct Todo<L: LifecycleState = Lifecycle, S: StatusState = Status> {
+pub struct Todo<L: LifecycleState = Lifecycle, S: StatusState = Status> {
     id: TodoId,
     title: TodoTitle,
     description: Option<TodoDescription>,
@@ -363,43 +362,40 @@ pub(crate) struct Todo<L: LifecycleState = Lifecycle, S: StatusState = Status> {
 }
 
 impl<L: LifecycleState, S: StatusState> Todo<L, S> {
-    pub(crate) fn id(&self) -> TodoId {
+    pub fn id(&self) -> TodoId {
         self.id
     }
 
-    pub(crate) fn title(&self) -> &TodoTitle {
+    pub fn title(&self) -> &TodoTitle {
         &self.title
     }
 
-    pub(crate) fn description(&self) -> Option<&TodoDescription> {
+    pub fn description(&self) -> Option<&TodoDescription> {
         self.description.as_ref()
     }
 
-    pub(crate) fn assignee_id(&self) -> Option<AssigneeId> {
+    pub fn assignee_id(&self) -> Option<AssigneeId> {
         self.assignee_id
     }
 
-    pub(crate) fn due_at(&self) -> Option<DueAt> {
+    pub fn due_at(&self) -> Option<DueAt> {
         self.due_at
     }
 
-    pub(crate) fn created_at(&self) -> Timestamp {
+    pub fn created_at(&self) -> Timestamp {
         self.created_at
     }
 
-    pub(crate) fn lifecycle(&self) -> L {
+    pub fn lifecycle(&self) -> L {
         self.lifecycle
     }
 
-    pub(crate) fn status(&self) -> S {
+    pub fn status(&self) -> S {
         self.status
     }
 
     #[must_use]
-    pub(crate) fn unassign_for_deleted_assignee(
-        self,
-        assignee: &Assignee<assignee::Deleted>,
-    ) -> Self {
+    pub fn unassign_for_deleted_assignee(self, assignee: &Assignee<assignee::Deleted>) -> Self {
         if self.assignee_id == Some(assignee.id()) {
             Self {
                 assignee_id: None,
@@ -411,7 +407,7 @@ impl<L: LifecycleState, S: StatusState> Todo<L, S> {
     }
 
     #[must_use]
-    pub(crate) fn into_any(self) -> Todo {
+    pub fn into_any(self) -> Todo {
         self.map_lifecycle(Into::into).map_status(Into::into)
     }
 
@@ -443,7 +439,7 @@ impl<L: LifecycleState, S: StatusState> Todo<L, S> {
 }
 
 impl Todo<Active, NotStarted> {
-    pub(crate) fn new(
+    pub fn new(
         id: TodoId,
         title: TodoTitle,
         description: Option<TodoDescription>,
@@ -464,24 +460,24 @@ impl Todo<Active, NotStarted> {
     }
 
     #[must_use]
-    pub(crate) fn start(self, started_at: StartedAt) -> Todo<Active, InProgress> {
+    pub fn start(self, started_at: StartedAt) -> Todo<Active, InProgress> {
         self.map_status(|NotStarted| InProgress { started_at })
     }
 }
 
 impl Todo<Active, InProgress> {
     #[must_use]
-    pub(crate) fn change_started_at(self, started_at: StartedAt) -> Self {
+    pub fn change_started_at(self, started_at: StartedAt) -> Self {
         self.map_status(|_| InProgress { started_at })
     }
 
     #[must_use]
-    pub(crate) fn unstart(self) -> Todo<Active, NotStarted> {
+    fn unstart(self) -> Todo<Active, NotStarted> {
         self.map_status(|_| NotStarted)
     }
 
     #[must_use]
-    pub(crate) fn complete(self, completed_at: CompletedAt) -> Todo<Active, Done> {
+    pub fn complete(self, completed_at: CompletedAt) -> Todo<Active, Done> {
         self.map_status(|InProgress { started_at }| Done {
             started_at,
             completed_at,
@@ -491,12 +487,12 @@ impl Todo<Active, InProgress> {
 
 impl Todo<Active, Done> {
     #[must_use]
-    pub(crate) fn change_started_at(self, started_at: StartedAt) -> Self {
+    pub fn change_started_at(self, started_at: StartedAt) -> Self {
         self.map_status(|done| Done { started_at, ..done })
     }
 
     #[must_use]
-    pub(crate) fn change_completed_at(self, completed_at: CompletedAt) -> Self {
+    pub fn change_completed_at(self, completed_at: CompletedAt) -> Self {
         self.map_status(|done| Done {
             completed_at,
             ..done
@@ -504,7 +500,7 @@ impl Todo<Active, Done> {
     }
 
     #[must_use]
-    pub(crate) fn reopen(self) -> Todo<Active, InProgress> {
+    fn reopen(self) -> Todo<Active, InProgress> {
         self.map_status(|done| InProgress {
             started_at: done.started_at,
         })
@@ -513,7 +509,7 @@ impl Todo<Active, Done> {
 
 impl<S: StatusState> Todo<Active, S> {
     #[must_use]
-    pub(crate) fn change_status(self, target: StatusKind, at: Timestamp) -> Todo<Active, Status> {
+    pub fn change_status(self, target: StatusKind, at: Timestamp) -> Todo<Active, Status> {
         let current = TodoByStatus::from(self.map_status(Into::into));
         match target {
             StatusKind::NotStarted => match current {
@@ -538,12 +534,12 @@ impl<S: StatusState> Todo<Active, S> {
     }
 
     #[must_use]
-    pub(crate) fn rename(self, title: TodoTitle) -> Self {
+    pub fn rename(self, title: TodoTitle) -> Self {
         Self { title, ..self }
     }
 
     #[must_use]
-    pub(crate) fn change_description(self, description: Option<TodoDescription>) -> Self {
+    pub fn change_description(self, description: Option<TodoDescription>) -> Self {
         Self {
             description,
             ..self
@@ -551,7 +547,7 @@ impl<S: StatusState> Todo<Active, S> {
     }
 
     #[must_use]
-    pub(crate) fn reassign(self, assignee: &Assignee<assignee::Active>) -> Self {
+    pub fn reassign(self, assignee: &Assignee<assignee::Active>) -> Self {
         Self {
             assignee_id: Some(assignee.id()),
             ..self
@@ -559,7 +555,7 @@ impl<S: StatusState> Todo<Active, S> {
     }
 
     #[must_use]
-    pub(crate) fn unassign(self) -> Self {
+    pub fn unassign(self) -> Self {
         Self {
             assignee_id: None,
             ..self
@@ -567,26 +563,26 @@ impl<S: StatusState> Todo<Active, S> {
     }
 
     #[must_use]
-    pub(crate) fn change_due_at(self, due_at: Option<DueAt>) -> Self {
+    pub fn change_due_at(self, due_at: Option<DueAt>) -> Self {
         Self { due_at, ..self }
     }
 
     #[must_use]
-    pub(crate) fn archive(self, archived_at: Timestamp) -> Todo<Archived, S> {
+    pub fn archive(self, archived_at: Timestamp) -> Todo<Archived, S> {
         self.map_lifecycle(|Active| Archived { archived_at })
     }
 }
 
 impl<S: StatusState> Todo<Archived, S> {
     #[must_use]
-    pub(crate) fn unarchive(self) -> Todo<Active, S> {
+    pub fn unarchive(self) -> Todo<Active, S> {
         self.map_lifecycle(|Archived { .. }| Active)
     }
 }
 
 impl<P: UndeletedState, S: StatusState> Todo<P, S> {
     #[must_use]
-    pub(crate) fn delete(self, deleted_at: Timestamp) -> Todo<Deleted<P>, S> {
+    pub fn delete(self, deleted_at: Timestamp) -> Todo<Deleted<P>, S> {
         self.map_lifecycle(|previous| Deleted {
             previous,
             deleted_at,
@@ -600,13 +596,13 @@ impl<P: UndeletedState, S: StatusState> Todo<Deleted<P>, S> {
         expect(dead_code, reason = "No use case restores deleted items yet.")
     )]
     #[must_use]
-    pub(crate) fn restore(self) -> Todo<P, S> {
+    fn restore(self) -> Todo<P, S> {
         self.map_lifecycle(|Deleted { previous, .. }| previous)
     }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum TodoByLifecycle<S: StatusState> {
+pub enum TodoByLifecycle<S: StatusState> {
     Active(Todo<Active, S>),
     Archived(Todo<Archived, S>),
     Deleted(Todo<Deleted, S>),
@@ -623,7 +619,7 @@ impl<S: StatusState> From<Todo<Lifecycle, S>> for TodoByLifecycle<S> {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum TodoByUndeleted<S: StatusState> {
+pub enum TodoByUndeleted<S: StatusState> {
     Active(Todo<Active, S>),
     Archived(Todo<Archived, S>),
 }
@@ -650,7 +646,7 @@ impl<S: StatusState> From<Todo<Archived, S>> for Todo<Undeleted, S> {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum TodoByStatus<L: LifecycleState> {
+pub enum TodoByStatus<L: LifecycleState> {
     NotStarted(Todo<L, NotStarted>),
     InProgress(Todo<L, InProgress>),
     Done(Todo<L, Done>),

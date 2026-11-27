@@ -1,2 +1,3 @@
-pub(crate) mod assignee;
-pub(crate) mod todo;
+pub mod assignee;
+mod text;
+pub mod todo;
