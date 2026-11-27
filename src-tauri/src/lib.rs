@@ -1,3 +1,11 @@
+#![cfg_attr(
+    mobile,
+    expect(
+        unused_must_use,
+        reason = "`tauri::mobile_entry_point` discards the result of `run`."
+    )
+)]
+
 pub mod app;
 mod cmd;
 mod domain;
@@ -16,7 +24,7 @@ fn greet(name: &str) -> String {
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run() {
+pub fn run() -> tauri::Result<()> {
     tracing_subscriber::fmt()
         .with_ansi(false)
         .with_writer(io::stderr.with_max_level(Level::WARN).or_else(io::stdout))
@@ -26,5 +34,4 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![greet])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
 }
