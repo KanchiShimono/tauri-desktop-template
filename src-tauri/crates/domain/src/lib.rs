@@ -1,14 +1,7 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+pub(crate) mod assignee;
+pub(crate) mod todo;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+fn first_line_break_or_control_character(text: &str) -> Option<char> {
+    text.chars()
+        .find(|&ch| ch.is_control() || matches!(ch, '\u{2028}' | '\u{2029}'))
 }
