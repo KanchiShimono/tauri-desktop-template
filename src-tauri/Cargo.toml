@@ -121,4 +121,5 @@ strip = true
 workspace = true
 
 [dev-dependencies]
+tauri = { version = "2", features = ["test"] }
 tokio = { workspace = true, features = ["macros", "rt"] }
