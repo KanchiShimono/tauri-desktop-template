@@ -88,31 +88,18 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 app.workspace = true
-domain.workspace = true
 jiff = { workspace = true, features = ["serde"] }
 macros.workspace = true
 serde = { workspace = true, features = ["derive"] }
-serde_json.workspace = true
 specta = { version = "=2.0.0-rc.28", features = ["derive", "function", "uuid"] }
-specta-typescript = "0.0.15"
-sqlx = { workspace = true, features = [
-  "macros",
-  "derive",
-  "migrate",
-  "uuid",
-  "tls-rustls-ring-webpki",
-  "runtime-tokio",
-  "sqlite",
-] }
 store-sqlite.workspace = true
 tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
-tauri-specta = { version = "=2.0.0-rc.29", features = ["typescript"] }
+tauri-specta = "=2.0.0-rc.29"
 thiserror.workspace = true
-tokio = { workspace = true, features = ["fs"] }
 tracing.workspace = true
 tracing-subscriber.workspace = true
-uuid = { workspace = true, features = ["v7", "serde"] }
+uuid = { workspace = true, features = ["serde"] }
 
 # Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration
 [profile.release]
@@ -126,6 +113,9 @@ strip = true
 workspace = true
 
 [dev-dependencies]
+serde_json.workspace = true
+specta-typescript = "0.0.15"
 store-sqlite = { workspace = true, features = ["test-support"] }
 tauri = { version = "2", features = ["test"] }
+tauri-specta = { version = "=2.0.0-rc.29", features = ["typescript"] }
 tokio = { workspace = true, features = ["macros", "rt"] }
